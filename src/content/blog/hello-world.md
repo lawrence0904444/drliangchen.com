@@ -4,6 +4,7 @@ description: 買下 drliangchen.com 的理由，以及這裡之後會寫些什�
 pubDate: 2026-10-05
 category: essays
 tags: [PGY, 自架網站]
+draft: true
 ---
 
 （這是範例文章，可以直接改寫成你自己的開站文，或刪掉。）
