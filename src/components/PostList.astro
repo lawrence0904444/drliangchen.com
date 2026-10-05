@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES } from '../content.config';
+import { formatDate } from '../lib';
+
+interface Props { posts: CollectionEntry<'blog'>[] }
+const { posts } = Astro.props;
+---
+{posts.length === 0 ? <p class="lead">還沒有文章，敬請期待。</p> : (
+  <ul class="post-list">
+    {posts.map((p) => (
+      <li>
+        <a class="title" href={`/blog/${p.id}/`}>{p.data.title}</a>
+        <div class="meta">
+          <time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate)}</time>
+          <a class="chip" href={`/category/${p.data.category}/`}>{CATEGORIES[p.data.category]}</a>
+        </div>
+        <p>{p.data.description}</p>
+      </li>
+    ))}
+  </ul>
+)}

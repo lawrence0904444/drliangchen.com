@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { getPosts } from '../lib';
+
+const posts = (await getPosts()).slice(0, 5);
+---
+<Base>
+  <h1>你好，我是陳亮</h1>
+  <p class="lead">
+    PGY 醫師。這裡記錄我在臨床訓練中的<a href="/category/notes/">學習筆記</a>、
+    用程式與 AI 打造的<a href="/category/tools/">工具</a>，以及一些<a href="/category/essays/">隨筆</a>。
+  </p>
+  <h2>最新文章</h2>
+  <PostList posts={posts} />
+  <p><a href="/blog/">所有文章 →</a></p>
+</Base>
