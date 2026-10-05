@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="隱私權政策" description="My Tasks MCP 個人工具的隱私權政策。">
+  <h1>隱私權政策</h1>
+
+  <p>最後更新：2026 年 10 月 5 日</p>
+
+  <p>
+    本政策適用於「My Tasks MCP」：陳亮為自己開發、僅供個人使用的工具，
+    讓 AI 助理（Claude Code）在本人電腦上讀取與管理本人的 Google Tasks 待辦事項。
+  </p>
+
+  <h2>存取哪些資料</h2>
+  <ul>
+    <li>僅要求 Google Tasks 權限（<code>https://www.googleapis.com/auth/tasks</code>），用於讀取、新增、修改與刪除待辦清單及待辦事項。</li>
+    <li>不存取 Gmail、雲端硬碟、聯絡人或其他 Google 資料。</li>
+  </ul>
+
+  <h2>資料如何使用與儲存</h2>
+  <ul>
+    <li>授權權杖只儲存在使用者本人的電腦上，不會上傳到任何伺服器。</li>
+    <li>待辦內容只在使用者要求時讀取，並傳給使用者自己使用的 AI 助理（Anthropic 的 Claude）處理，以完成使用者指示的操作。</li>
+    <li>不出售、不分享資料給其他第三方，也不用於廣告。</li>
+  </ul>
+
+  <p>
+    本工具對 Google API 資料的使用遵守
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API 服務使用者資料政策</a>，
+    包括「有限使用」規定。
+  </p>
+
+  <h2>撤銷存取</h2>
+  <p>
+    隨時可到 <a href="https://myaccount.google.com/permissions">Google 帳戶的第三方存取權頁面</a>
+    移除「My Tasks MCP」，並刪除本機的 <code>token.json</code>。
+  </p>
+
+  <h2>聯絡</h2>
+  <p>Email：<a href="mailto:me@drliangchen.com">me@drliangchen.com</a></p>
+</Base>
