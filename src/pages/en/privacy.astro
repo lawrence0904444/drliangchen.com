@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="Privacy Policy" description="Privacy policy for My Tasks MCP, a personal tool.">
+  <h1>Privacy Policy</h1>
+
+  <p>Last updated: October 5, 2026</p>
+
+  <p>
+    This policy covers "My Tasks MCP", a tool Liang Chen built for his own personal use. It lets an AI
+    assistant (Claude Code) read and manage his own Google Tasks on his own computer.
+  </p>
+
+  <h2>What data is accessed</h2>
+  <ul>
+    <li>Only the Google Tasks scope (<code>https://www.googleapis.com/auth/tasks</code>) is requested, used to read, create, update and delete task lists and tasks.</li>
+    <li>Gmail, Google Drive, Contacts and other Google data are not accessed.</li>
+  </ul>
+
+  <h2>How data is used and stored</h2>
+  <ul>
+    <li>Authorization tokens are stored only on the user's own computer and are never uploaded to any server.</li>
+    <li>Task content is read only when the user asks, and is passed to the user's own AI assistant (Anthropic's Claude) to carry out the user's instruction.</li>
+    <li>Data is not sold, not shared with other third parties, and not used for advertising.</li>
+  </ul>
+
+  <p>
+    This tool's use of information received from Google APIs adheres to the
+    <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
+    including the Limited Use requirements.
+  </p>
+
+  <h2>Revoking access</h2>
+  <p>
+    You can remove "My Tasks MCP" at any time from the
+    <a href="https://myaccount.google.com/permissions">third-party access page of your Google Account</a>,
+    and delete the local <code>token.json</code> file.
+  </p>
+
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:me@drliangchen.com">me@drliangchen.com</a></p>
+</Base>

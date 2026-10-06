@@ -1,16 +1,4 @@
 ---
-import Base from '../../layouts/Base.astro';
-import PostList from '../../components/PostList.astro';
-import { CATEGORIES } from '../../content.config';
-import { getPosts } from '../../lib';
-
-const posts = await getPosts();
+import BlogList from '../../components/BlogList.astro';
 ---
-<Base title="文章">
-  <h1>文章</h1>
-  <div class="chips">
-    <a class="chip" href="/blog/" aria-current="page">全部</a>
-    {Object.entries(CATEGORIES).map(([key, label]) => <a class="chip" href={`/category/${key}/`}>{label}</a>)}
-  </div>
-  <PostList posts={posts} />
-</Base>
+<BlogList lang="zh" />
