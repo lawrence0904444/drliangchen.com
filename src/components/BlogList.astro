@@ -1,0 +1,24 @@
+---
+// 文章列表與分類頁共用；category 不給就是「全部」
+import Base from '../layouts/Base.astro';
+import PostList from './PostList.astro';
+import { CATEGORIES } from '../content.config';
+import { CATEGORY_LABELS, UI, localize, type Lang } from '../i18n';
+import { getPosts } from '../lib';
+
+interface Props { lang: Lang; category?: keyof typeof CATEGORIES }
+const { lang, category } = Astro.props;
+const labels = CATEGORY_LABELS[lang];
+const posts = (await getPosts(lang)).filter((p) => !category || p.data.category === category);
+const title = category ? labels[category] : UI[lang].nav.blog;
+---
+<Base title={title}>
+  <h1>{title}</h1>
+  <div class="chips">
+    <a class="chip" href={localize('/blog/', lang)} aria-current={category ? undefined : 'page'}>{UI[lang].all}</a>
+    {Object.keys(CATEGORIES).map((key) => (
+      <a class="chip" href={localize(`/category/${key}/`, lang)} aria-current={key === category ? 'page' : undefined}>{labels[key as keyof typeof labels]}</a>
+    ))}
+  </div>
+  <PostList posts={posts} lang={lang} />
+</Base>

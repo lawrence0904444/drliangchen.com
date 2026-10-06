@@ -1,23 +1,9 @@
 ---
-import Base from '../../layouts/Base.astro';
-import PostList from '../../components/PostList.astro';
+import BlogList from '../../components/BlogList.astro';
 import { CATEGORIES } from '../../content.config';
-import { getPosts } from '../../lib';
 
 export function getStaticPaths() {
   return Object.keys(CATEGORIES).map((category) => ({ params: { category } }));
 }
-const category = Astro.params.category as keyof typeof CATEGORIES;
-const label = CATEGORIES[category];
-const posts = (await getPosts()).filter((p) => p.data.category === category);
 ---
-<Base title={label}>
-  <h1>{label}</h1>
-  <div class="chips">
-    <a class="chip" href="/blog/">全部</a>
-    {Object.entries(CATEGORIES).map(([key, l]) => (
-      <a class="chip" href={`/category/${key}/`} aria-current={key === category ? 'page' : undefined}>{l}</a>
-    ))}
-  </div>
-  <PostList posts={posts} />
-</Base>
+<BlogList lang="zh" category={Astro.params.category as keyof typeof CATEGORIES} />
