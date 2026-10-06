@@ -273,6 +273,7 @@ export const cv: CvSection[] = [
   {
     heading: { zh: '證照', en: 'Certifications' },
     groups: [{ items: [
+      { when: '2026', what: { zh: '中華民國醫師證書（衛生福利部）', en: 'Physician License, Ministry of Health and Welfare, Taiwan' } },
       { when: '2025', what: { zh: '高級心臟救命術（ACLS）', en: 'Advanced Cardiovascular Life Support (ACLS)' } },
       { when: '2025', what: { zh: 'ETTC 證書（外傷繼續教育 16 小時）', en: 'ETTC Certificate (16 hours of trauma CME)' } },
       { when: '2025', what: { zh: '經濟部 AI 應用規劃師（初級）', en: 'AI Application Planner, Associate Level, Ministry of Economic Affairs, Taiwan' } },
