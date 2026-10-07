@@ -7,6 +7,10 @@ export const UI = {
   zh: {
     htmlLang: 'zh-Hant-TW',
     site: '陳亮醫師 Liang Chen, MD',
+    homeTitle: '陳亮醫師 Liang Chen, MD｜台北慈濟醫院 PGY 醫師',
+    titleSuffix: '｜陳亮醫師',
+    ogLocale: 'zh_TW',
+    ogImageAlt: '陳亮醫師 Liang Chen, MD｜台北慈濟醫院 PGY 醫師',
     siteDescription: 'PGY 醫師陳亮的筆記、工具與隨筆。',
     brand: '陳亮醫師',
     brandSub: 'Liang Chen, MD',
@@ -24,6 +28,10 @@ export const UI = {
   en: {
     htmlLang: 'en',
     site: 'Liang Chen, MD',
+    homeTitle: 'Liang Chen, MD | PGY Physician, Taipei Tzu Chi Hospital',
+    titleSuffix: ' | Liang Chen, MD',
+    ogLocale: 'en_US',
+    ogImageAlt: 'Liang Chen, MD | PGY Physician, Taipei Tzu Chi Hospital',
     siteDescription: 'Notes, tools and essays by Liang Chen, MD, a PGY physician in Taiwan.',
     brand: 'Liang Chen, MD',
     brandSub: '陳亮醫師',

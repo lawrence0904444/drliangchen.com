@@ -1,7 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { faqLd, profilePageLd, PROFILES } from '../../seo';
+
+const facts = [
+  { q: 'Who is Liang Chen, MD?', a: 'Liang Chen (陳亮), MD, is a postgraduate year (PGY) physician at Taipei Tzu Chi Hospital, Taiwan, and a graduate of Tzu Chi University School of Medicine. His interests are physical medicine and rehabilitation, pain medicine, sports medicine and evidence-based medicine.' },
+  { q: 'Where does Liang Chen work?', a: 'He is in two-year PGY training at Taipei Tzu Chi Hospital, Buddhist Tzu Chi Medical Foundation, in New Taipei City, Taiwan.' },
+  { q: 'What does Liang Chen research?', a: 'Mainly systematic reviews and meta-analyses. He is first author of the Cochrane protocol "Transcutaneous electrical nerve stimulation (TENS) for chronic neck pain" and has worked on reviews of transcutaneous spinal cord stimulation for spinal cord injury and shockwave therapy for Achilles tendinopathy. He has been a visiting observer at Johns Hopkins and Mass General Brigham sports medicine.' },
+  { q: 'How can I contact Liang Chen?', a: 'Email me@drliangchen.com, or reach him on LinkedIn or ORCID. This site does not give individual medical advice.' },
+];
 ---
-<Base title="About" description="About Liang Chen, MD: PGY physician interested in evidence-based medicine, code and AI.">
+<Base title="About" fullTitle="About Liang Chen, MD" description="About Liang Chen, MD (陳亮): PGY physician at Taipei Tzu Chi Hospital, interested in PM&R, pain and sports medicine, evidence-based medicine, code and AI." jsonLd={profilePageLd('en', '/en/about/', [faqLd(facts)])} ogType="profile">
   <h1>About</h1>
 
   <p>
@@ -22,10 +30,17 @@ import Base from '../../layouts/Base.astro';
   </ul>
   <p>Most posts are written in Chinese; the ones with English versions are listed under <a href="/en/blog/">Posts</a>.</p>
 
+  <h2>Quick facts</h2>
+  <dl class="facts">
+    {facts.map(({ q, a }) => (<><dt>{q}</dt><dd>{a}</dd></>))}
+  </dl>
+
   <h2>Contact</h2>
   <ul>
     <li>Email: <a href="mailto:me@drliangchen.com">me@drliangchen.com</a></li>
-    <li>GitHub: <a href="https://github.com/lawrence0904444">github.com/lawrence0904444</a></li>
+    <li>LinkedIn: <a href={PROFILES.linkedin} rel="me">linkedin.com/in/liang-lawrence-chen</a></li>
+    <li>ORCID: <a href={PROFILES.orcid} rel="me">0009-0004-2855-8011</a></li>
+    <li>GitHub: <a href={PROFILES.github} rel="me">github.com/lawrence0904444</a></li>
   </ul>
 
   <p class="lead">

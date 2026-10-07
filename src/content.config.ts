@@ -13,6 +13,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(), // 有填就顯示「最後更新」
     category: z.enum(['notes', 'tools', 'essays']),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),

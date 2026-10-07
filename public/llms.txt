@@ -1,0 +1,29 @@
+# 陳亮醫師 Liang Chen, MD
+
+> Personal website of Liang Chen, MD (陳亮; also known as Lawrence Chen), a postgraduate year (PGY) physician at Taipei Tzu Chi Hospital, Buddhist Tzu Chi Medical Foundation, Taiwan. Graduate of Tzu Chi University School of Medicine. Interests: physical medicine and rehabilitation (PM&R), pain medicine, sports medicine and evidence-based medicine. The site is bilingual: Traditional Chinese at `/`, English at `/en/`.
+
+陳亮醫師是台北慈濟醫院的 PGY 醫師，慈濟大學醫學系畢業，關注復健醫學、疼痛醫學、運動醫學與實證醫學。本站文章為個人學習紀錄，不提供個別醫療諮詢。
+
+## Profile
+
+- [CV (English)](https://drliangchen.com/en/cv/): education, training, publications, presentations, grants, international clinical visits, honors
+- [簡歷（中文）](https://drliangchen.com/cv/)
+- [About (English)](https://drliangchen.com/en/about/): background and quick facts
+- [關於我（中文）](https://drliangchen.com/about/)
+
+## Selected work
+
+- Chen L, Hou WH, Riera R, Su CW, Horng YS. Transcutaneous electrical nerve stimulation (TENS) for chronic neck pain (Protocol). Cochrane Database of Systematic Reviews 2026, Issue 8. CD016383. https://doi.org/10.1002/14651858.CD016383 (first author)
+- Visiting observer, July 2026: Johns Hopkins Hospital (pain medicine), Johns Hopkins Bayview (PM&R), Massachusetts General Hospital and Mass General Brigham sports medicine
+
+## Posts
+
+- [文章列表（中文）](https://drliangchen.com/blog/): clinical notes, evidence-based medicine, tools and essays
+- [Posts (English)](https://drliangchen.com/en/blog/)
+
+## Identity
+
+- ORCID: https://orcid.org/0009-0004-2855-8011
+- LinkedIn: https://www.linkedin.com/in/liang-lawrence-chen/
+- GitHub: https://github.com/lawrence0904444
+- Email: me@drliangchen.com

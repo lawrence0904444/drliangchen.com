@@ -1,14 +1,21 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PostList from '../../components/PostList.astro';
+import Profile from '../../components/Profile.astro';
 import { getPosts } from '../../lib';
+import { profilePageLd } from '../../seo';
 
 const posts = (await getPosts('en')).slice(0, 5);
 ---
-<Base>
-  <h1>Hi, I'm Liang Chen</h1>
+<Base description="Liang Chen, MD (陳亮) is a PGY physician at Taipei Tzu Chi Hospital, Taiwan, and first author of a Cochrane review protocol, with interests in PM&R, pain and sports medicine." jsonLd={profilePageLd('en', '/en/')}>
+  <Profile lang="en" />
+  <p>
+    I'm Liang Chen, a graduate of Tzu Chi University School of Medicine, now in postgraduate year (PGY) training at
+    Taipei Tzu Chi Hospital. I'm first author of the Cochrane review protocol <a href="https://doi.org/10.1002/14651858.CD016383"><em>TENS for chronic neck pain</em></a>,
+    and have been a visiting observer at Johns Hopkins and Mass General Brigham sports medicine.
+  </p>
   <p class="lead">
-    A PGY physician in Taiwan. This is where I keep <a href="/en/category/notes/">notes</a> from clinical training,
+    This is where I keep <a href="/en/category/notes/">notes</a> from clinical training,
     <a href="/en/category/tools/">tools</a> I build with code and AI, and the occasional <a href="/en/category/essays/">essay</a>.
   </p>
   <h2>Latest posts</h2>

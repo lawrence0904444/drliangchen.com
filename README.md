@@ -21,6 +21,10 @@ pubDate: 2026-10-20
 category: notes        # notes 筆記 / tools 工具 / essays 隨筆
 tags: [實證醫學]
 draft: true            # 草稿不會發佈；寫完改 false 或刪掉這行
+updatedDate: 2026-11-01  # 選填：大幅修訂後填寫，會顯示「最後更新」
+faq:                   # 選填：文末常見問題，並輸出 FAQPage 結構化資料
+  - q: 問題？
+    a: 一兩句回答。
 ---
 
 內文用 Markdown 寫。
@@ -39,6 +43,7 @@ draft: true            # 草稿不會發佈；寫完改 false 或刪掉這行
 - `src/data/cv.ts`：簡歷資料，中英文共用（改一次，`/cv/` 與 `/en/cv/` 一起更新；空的區塊不會顯示）
 - `src/pages/about.astro`、`src/pages/en/about.astro`：關於我（中、英各一份）
 - `src/i18n.ts`：頁首、頁尾、分類名稱等介面文字
+- `src/seo.ts`：結構化資料（Person、ORCID／LinkedIn 等個人檔案連結）；`public/llms.txt`：給 AI 的網站簡介
 
 ## 第一次部署（只要做一次）
 

@@ -1,7 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import { faqLd, profilePageLd, PROFILES } from '../seo';
+
+// 快速認識：頁面顯示的問答與 FAQPage 結構化資料共用同一份內容
+const facts = [
+  { q: '陳亮醫師是誰？', a: '陳亮（Liang Chen, MD）是台北慈濟醫院的一般醫學訓練（PGY）醫師，慈濟大學醫學系畢業，關注復健醫學、疼痛醫學、運動醫學與實證醫學。' },
+  { q: '陳亮醫師目前在哪裡服務？', a: '目前在佛教慈濟醫療財團法人台北慈濟醫院（新北市新店區）接受二年期 PGY 訓練。' },
+  { q: '陳亮醫師的研究方向是什麼？', a: '以系統性回顧與統合分析為主，是 Cochrane protocol〈經皮神經電刺激（TENS）治療慢性頸痛〉的第一作者，也參與脊髓損傷經皮脊髓刺激、阿基里斯肌腱病變震波治療等研究；曾赴約翰霍普金斯醫院、麻省總醫院運動醫學中心擔任訪問觀察員。' },
+  { q: '如何聯絡陳亮醫師？', a: '可寄信到 me@drliangchen.com，或透過 LinkedIn、ORCID 聯繫。本站不提供個別醫療諮詢。' },
+];
 ---
-<Base title="關於我" description="關於陳亮醫師：PGY 訓練中，關注實證醫學、程式與 AI。">
+<Base title="關於我" fullTitle="關於陳亮醫師｜Liang Chen, MD" description="關於陳亮醫師（Liang Chen, MD）：台北慈濟醫院 PGY 醫師，關注復健、疼痛與運動醫學、實證醫學、程式與 AI。" jsonLd={profilePageLd('zh', '/about/', [faqLd(facts)])} ogType="profile">
   <h1>關於我</h1>
 
   <p>
@@ -20,10 +29,17 @@ import Base from '../layouts/Base.astro';
     <li><a href="/category/essays/">隨筆</a>：選科、時間管理、PGY 生活</li>
   </ul>
 
+  <h2>快速認識</h2>
+  <dl class="facts">
+    {facts.map(({ q, a }) => (<><dt>{q}</dt><dd>{a}</dd></>))}
+  </dl>
+
   <h2>聯絡我</h2>
   <ul>
     <li>Email：<a href="mailto:me@drliangchen.com">me@drliangchen.com</a></li>
-    <li>GitHub：<a href="https://github.com/lawrence0904444">github.com/lawrence0904444</a></li>
+    <li>LinkedIn：<a href={PROFILES.linkedin} rel="me">linkedin.com/in/liang-lawrence-chen</a></li>
+    <li>ORCID：<a href={PROFILES.orcid} rel="me">0009-0004-2855-8011</a></li>
+    <li>GitHub：<a href={PROFILES.github} rel="me">github.com/lawrence0904444</a></li>
   </ul>
 
   <p class="lead">

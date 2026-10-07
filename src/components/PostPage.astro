@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { CATEGORY_LABELS, UI, localize, type Lang } from '../i18n';
 import { formatDate, getPosts, postSlug } from '../lib';
+import { PERSON_ID, PHOTO, PROFILES } from '../seo';
 
 interface Props { post: CollectionEntry<'blog'>; lang: Lang }
 const { post, lang } = Astro.props;
@@ -12,14 +13,14 @@ const other = lang === 'zh' ? 'en' : 'zh';
 const translated = (await getPosts(other)).some((p) => postSlug(p) === postSlug(post));
 
 // 結構化資料：每篇輸出 BlogPosting，有 faq 的文章再加 FAQPage
-const { title, description, pubDate, category, tags, faq } = post.data;
+const { title, description, pubDate, updatedDate, category, tags, faq } = post.data;
 const url = new URL(Astro.url.pathname, Astro.site).href;
+// 作者以 @id 指向全站共用的 Person（定義在 src/seo.ts）
 const author = {
   '@type': 'Person',
+  '@id': PERSON_ID,
   name: lang === 'zh' ? '陳亮' : 'Liang Chen',
-  alternateName: lang === 'zh' ? 'Liang Chen' : '陳亮',
   url: new URL(localize('/about/', lang), Astro.site).href,
-  sameAs: ['https://github.com/lawrence0904444'],
 };
 const jsonLd: object[] = [
   {
@@ -28,6 +29,8 @@ const jsonLd: object[] = [
     headline: title,
     description,
     datePublished: pubDate.toISOString(),
+    dateModified: (updatedDate ?? pubDate).toISOString(),
+    image: new URL(`/images/og-${lang}.jpg`, Astro.site).href,
     inLanguage: UI[lang].htmlLang,
     articleSection: CATEGORY_LABELS[lang][category],
     keywords: tags.join(', '),
@@ -49,11 +52,12 @@ if (faq.length) {
   });
 }
 ---
-<Base title={title} description={description} alt={translated ? localize(`/blog/${postSlug(post)}/`, other) : false} jsonLd={jsonLd}>
+<Base title={title} description={description} alt={translated ? localize(`/blog/${postSlug(post)}/`, other) : false} jsonLd={jsonLd} ogType="article">
   <article>
     <h1>{title}</h1>
     <div class="meta">
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang)}</time>
+      {updatedDate && <span>{lang === 'zh' ? '最後更新' : 'Updated'} <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate, lang)}</time></span>}
       <a class="chip" href={localize(`/category/${category}/`, lang)}>{CATEGORY_LABELS[lang][category]}</a>
       {tags.map((t) => <span class="chip">#{t}</span>)}
     </div>
@@ -69,5 +73,13 @@ if (faq.length) {
         ))}
       </section>
     )}
+    <aside class="author-box">
+      <img src={PHOTO} alt={lang === 'zh' ? '陳亮醫師' : 'Liang Chen, MD'} width="72" height="72" loading="lazy" />
+      <div>
+        <p class="author-name"><a href={localize('/about/', lang)}>{lang === 'zh' ? '陳亮醫師 Liang Chen, MD' : 'Liang Chen, MD'}</a></p>
+        <p class="meta">{lang === 'zh' ? '台北慈濟醫院 PGY 醫師・Cochrane 系統性回顧第一作者・關注復健、疼痛與運動醫學' : 'PGY physician at Taipei Tzu Chi Hospital. First author of a Cochrane review protocol. Interested in PM&R, pain and sports medicine.'}</p>
+        <p class="meta"><a href={localize('/cv/', lang)}>{lang === 'zh' ? '簡歷' : 'CV'}</a> · <a href={PROFILES.orcid}>ORCID</a> · <a href={PROFILES.linkedin}>LinkedIn</a></p>
+      </div>
+    </aside>
   </article>
 </Base>
