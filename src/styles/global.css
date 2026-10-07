@@ -7,8 +7,9 @@
   --card: #ffffff;
   --code-bg: #f1efe9;
 }
+/* 深色：使用者按鈕選擇優先（data-theme），沒選過就跟隨系統 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #14181b;
     --fg: #e6e8ea;
     --muted: #9aa5ad;
@@ -17,6 +18,15 @@
     --card: #1b2125;
     --code-bg: #20272c;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #14181b;
+  --fg: #e6e8ea;
+  --muted: #9aa5ad;
+  --line: #2a3237;
+  --accent: #5fb7c1;
+  --card: #1b2125;
+  --code-bg: #20272c;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -33,8 +43,25 @@ main, .site-header, .site-footer { max-width: 720px; margin: 0 auto; padding: 0 
 main { min-height: 60vh; padding-bottom: 48px; }
 
 .site-header {
-  display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between;
+  display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between;
   padding-top: 28px; padding-bottom: 28px;
+}
+.brand-row { display: flex; align-items: center; gap: 10px; }
+.divider { color: var(--line); }
+.lang-switch { color: var(--muted); text-decoration: none; font-size: .9rem; }
+.lang-switch:hover { color: var(--accent); }
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+  padding: 0; border: 0; border-radius: 6px; background: none; color: var(--muted); cursor: pointer;
+}
+.theme-toggle:hover { color: var(--accent); background: var(--code-bg); }
+/* 淺色時顯示月亮（按了變深色），深色時顯示太陽 */
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
 }
 .brand { font-weight: 700; font-size: 1.15rem; color: var(--fg); text-decoration: none; }
 .brand span { color: var(--muted); font-weight: 400; font-size: .9rem; margin-left: 4px; }
@@ -71,6 +98,11 @@ a.chip:hover, a.chip[aria-current] { border-color: var(--accent); color: var(--a
 .cv-section { margin-top: 2em; }
 .cv-item { display: grid; grid-template-columns: 110px 1fr; gap: 4px 16px; padding: 6px 0; }
 .cv-item .when { color: var(--muted); font-size: .9rem; }
+.cv-item .what a { word-break: break-word; }
+.cv-head { margin-bottom: 1em; }
+.cv-head p { margin: 2px 0; }
+.cv-sub { font-size: .95rem; color: var(--muted); font-weight: 600; margin: 1.2em 0 .2em; }
 @media (max-width: 520px) { .cv-item { grid-template-columns: 1fr; } }
 .todo { background: #fff3c4; color: #5c4a00; padding: 0 .3em; border-radius: 3px; }
-@media (prefers-color-scheme: dark) { .todo { background: #4a3f12; color: #ffe9a3; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .todo { background: #4a3f12; color: #ffe9a3; } }
+:root[data-theme="dark"] .todo { background: #4a3f12; color: #ffe9a3; }

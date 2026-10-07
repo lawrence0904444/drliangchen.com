@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import { cv, cvHead } from '../data/cv';
+import type { Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+type Text = string | { zh: string; en: string };
+const tr = (x: Text) => (typeof x === 'string' ? x : x[lang]);
+const sections = cv.filter((s) => s.groups.some((g) => g.items.length > 0));
+const page = lang === 'zh'
+  ? { title: '簡歷', description: '陳亮醫師的學經歷、研究發表、海外見習與獲獎。' }
+  : { title: 'CV', description: 'Curriculum vitae of Liang Chen, MD: education, publications, observerships and honors.' };
+---
+<Base title={page.title} description={page.description}>
+  <h1>{page.title}</h1>
+  <div class="cv-head">
+    <p><strong>{cvHead.name[lang]}</strong></p>
+    <p class="lead">{cvHead.title[lang]}</p>
+    <p class="lead">{cvHead.interests[lang]}</p>
+  </div>
+
+  {sections.map((section) => (
+    <section class="cv-section">
+      <h2>{section.heading[lang]}</h2>
+      {section.groups.filter((g) => g.items.length > 0).map((group) => (
+        <>
+          {group.sub && <h3 class="cv-sub">{tr(group.sub)}</h3>}
+          {group.items.map((item) => (
+            <div class="cv-item">
+              <span class="when">{tr(item.when)}</span>
+              <div class="what">
+                <span set:html={tr(item.what)} />
+                {item.href && <> <a href={item.href}>{item.href.replace(/^https:\/\//, '')}</a></>}
+                {item.note && <div class="meta">{tr(item.note)}</div>}
+              </div>
+            </div>
+          ))}
+        </>
+      ))}
+    </section>
+  ))}
+</Base>

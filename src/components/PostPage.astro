@@ -1,0 +1,73 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { CATEGORY_LABELS, UI, localize, type Lang } from '../i18n';
+import { formatDate, getPosts, postSlug } from '../lib';
+
+interface Props { post: CollectionEntry<'blog'>; lang: Lang }
+const { post, lang } = Astro.props;
+const { Content } = await render(post);
+// 有另一語言的同名文章就互連，沒有就讓切換鈕回到另一語言的文章列表
+const other = lang === 'zh' ? 'en' : 'zh';
+const translated = (await getPosts(other)).some((p) => postSlug(p) === postSlug(post));
+
+// 結構化資料：每篇輸出 BlogPosting，有 faq 的文章再加 FAQPage
+const { title, description, pubDate, category, tags, faq } = post.data;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const author = {
+  '@type': 'Person',
+  name: lang === 'zh' ? '陳亮' : 'Liang Chen',
+  alternateName: lang === 'zh' ? 'Liang Chen' : '陳亮',
+  url: new URL(localize('/about/', lang), Astro.site).href,
+  sameAs: ['https://github.com/lawrence0904444'],
+};
+const jsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    datePublished: pubDate.toISOString(),
+    inLanguage: UI[lang].htmlLang,
+    articleSection: CATEGORY_LABELS[lang][category],
+    keywords: tags.join(', '),
+    url,
+    mainEntityOfPage: url,
+    author,
+    publisher: author,
+  },
+];
+if (faq.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  });
+}
+---
+<Base title={title} description={description} alt={translated ? localize(`/blog/${postSlug(post)}/`, other) : false} jsonLd={jsonLd}>
+  <article>
+    <h1>{title}</h1>
+    <div class="meta">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang)}</time>
+      <a class="chip" href={localize(`/category/${category}/`, lang)}>{CATEGORY_LABELS[lang][category]}</a>
+      {tags.map((t) => <span class="chip">#{t}</span>)}
+    </div>
+    <Content />
+    {faq.length > 0 && (
+      <section>
+        <h2>{lang === 'zh' ? '常見問題' : 'FAQ'}</h2>
+        {faq.map(({ q, a }) => (
+          <>
+            <h3>{q}</h3>
+            <p>{a}</p>
+          </>
+        ))}
+      </section>
+    )}
+  </article>
+</Base>

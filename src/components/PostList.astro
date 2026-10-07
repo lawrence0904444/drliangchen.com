@@ -1,19 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { CATEGORIES } from '../content.config';
-import { formatDate } from '../lib';
+import { CATEGORY_LABELS, UI, localize, type Lang } from '../i18n';
+import { formatDate, postSlug } from '../lib';
 
-interface Props { posts: CollectionEntry<'blog'>[] }
-const { posts } = Astro.props;
+interface Props { posts: CollectionEntry<'blog'>[]; lang?: Lang }
+const { posts, lang = 'zh' } = Astro.props;
 ---
-{posts.length === 0 ? <p class="lead">還沒有文章，敬請期待。</p> : (
+{posts.length === 0 ? <p class="lead">{UI[lang].noPosts}</p> : (
   <ul class="post-list">
     {posts.map((p) => (
       <li>
-        <a class="title" href={`/blog/${p.id}/`}>{p.data.title}</a>
+        <a class="title" href={localize(`/blog/${postSlug(p)}/`, lang)}>{p.data.title}</a>
         <div class="meta">
-          <time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate)}</time>
-          <a class="chip" href={`/category/${p.data.category}/`}>{CATEGORIES[p.data.category]}</a>
+          <time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate, lang)}</time>
+          <a class="chip" href={localize(`/category/${p.data.category}/`, lang)}>{CATEGORY_LABELS[lang][p.data.category]}</a>
         </div>
         <p>{p.data.description}</p>
       </li>

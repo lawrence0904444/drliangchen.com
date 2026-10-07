@@ -1,72 +1,10 @@
 ---
-import { render } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { CATEGORIES } from '../../content.config';
-import { getPosts, formatDate } from '../../lib';
+import PostPage from '../../components/PostPage.astro';
+import { getPosts, postSlug } from '../../lib';
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
-}
-const { post } = Astro.props;
-const { Content } = await render(post);
-const { title, description, pubDate, category, tags, faq } = post.data;
-
-const url = new URL(Astro.url.pathname, Astro.site).href;
-const author = {
-  '@type': 'Person',
-  name: '陳亮',
-  alternateName: 'Liang Chen',
-  url: new URL('/about/', Astro.site).href,
-  sameAs: ['https://github.com/lawrence0904444'],
-};
-const jsonLd: object[] = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: title,
-    description,
-    datePublished: pubDate.toISOString(),
-    inLanguage: 'zh-Hant-TW',
-    articleSection: CATEGORIES[category],
-    keywords: tags.join(', '),
-    url,
-    mainEntityOfPage: url,
-    author,
-    publisher: author,
-  },
-];
-if (faq.length) {
-  jsonLd.push({
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faq.map(({ q, a }) => ({
-      '@type': 'Question',
-      name: q,
-      acceptedAnswer: { '@type': 'Answer', text: a },
-    })),
-  });
+  const posts = await getPosts('zh');
+  return posts.map((post) => ({ params: { slug: postSlug(post) }, props: { post } }));
 }
 ---
-<Base title={title} description={description} jsonLd={jsonLd}>
-  <article>
-    <h1>{title}</h1>
-    <div class="meta">
-      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-      <a class="chip" href={`/category/${category}/`}>{CATEGORIES[category]}</a>
-      {tags.map((t) => <span class="chip">#{t}</span>)}
-    </div>
-    <Content />
-    {faq.length > 0 && (
-      <section>
-        <h2>常見問題</h2>
-        {faq.map(({ q, a }) => (
-          <>
-            <h3>{q}</h3>
-            <p>{a}</p>
-          </>
-        ))}
-      </section>
-    )}
-  </article>
-</Base>
+<PostPage post={Astro.props.post} lang="zh" />

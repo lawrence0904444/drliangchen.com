@@ -1,23 +1,29 @@
 ---
 import '../styles/global.css';
+import { UI, localize, langFromPath, stripLang } from '../i18n';
 
 interface Props {
   title?: string;
   description?: string;
+  // 另一語言的對應頁面。預設為同路徑換語言；false 表示沒有翻譯（切換鈕改連到另一語言的文章列表）
+  alt?: string | false;
   jsonLd?: object | object[];
 }
-const SITE = '陳亮醫師 Liang Chen, MD';
-const { title, description = 'PGY 醫師陳亮的筆記、工具與隨筆。', jsonLd } = Astro.props;
-const fullTitle = title ? `${title} | ${SITE}` : SITE;
 const path = Astro.url.pathname;
+const lang = langFromPath(path);
+const other = lang === 'zh' ? 'en' : 'zh';
+const t = UI[lang];
+const { title, description = t.siteDescription, alt, jsonLd } = Astro.props;
+const fullTitle = title ? `${title} | ${t.site}` : t.site;
+const altHref = alt === false ? localize('/blog/', other) : alt ?? localize(stripLang(path), other);
 const nav = [
-  { href: '/blog/', label: '文章' },
-  { href: '/cv/', label: '簡歷' },
-  { href: '/about/', label: '關於我' },
+  { href: localize('/blog/', lang), label: t.nav.blog },
+  { href: localize('/cv/', lang), label: t.nav.cv },
+  { href: localize('/about/', lang), label: t.nav.about },
 ];
 ---
 <!doctype html>
-<html lang="zh-Hant-TW">
+<html lang={t.htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,14 +31,36 @@ const nav = [
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={new URL(path, Astro.site)} />
-    <link rel="alternate" type="application/rss+xml" title={SITE} href="/rss.xml" />
+    {alt !== false && (
+      <>
+        <link rel="alternate" hreflang={t.htmlLang} href={new URL(path, Astro.site)} />
+        <link rel="alternate" hreflang={UI[other].htmlLang} href={new URL(altHref, Astro.site)} />
+        <link rel="alternate" hreflang="x-default" href={new URL(lang === 'zh' ? path : altHref, Astro.site)} />
+      </>
+    )}
+    <link rel="alternate" type="application/rss+xml" title={t.site} href={localize('/rss.xml', lang)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
+    <script is:inline>
+      // 在頁面繪製前套用主題，避免閃爍：使用者選過就用選的，否則跟隨系統
+      try {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">陳亮醫師 <span>Liang Chen, MD</span></a>
+      <div class="brand-row">
+        <a class="brand" href={localize('/', lang)}>{t.brand} <span>{t.brandSub}</span></a>
+        <button class="theme-toggle" type="button" aria-label={t.themeAria} title={t.themeAria}>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="divider" aria-hidden="true">|</span>
+        <a class="lang-switch" href={altHref} hreflang={UI[other].htmlLang} lang={UI[other].htmlLang} aria-label={t.switchAria}>{t.switchLabel}</a>
+      </div>
       <nav>
         {nav.map((n) => (
           <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
@@ -43,8 +71,17 @@ const nav = [
       <slot />
     </main>
     <footer class="site-footer">
-      <p>本站內容為個人學習筆記與心得，僅供參考，不構成醫療建議，亦不代表任職機構立場。身體不適請就醫。</p>
-      <p>© {new Date().getFullYear()} 陳亮 · <a href="/rss.xml">RSS</a></p>
+      <p>{t.footer}</p>
+      <p>© {new Date().getFullYear()} {lang === 'zh' ? '陳亮' : 'Liang Chen'} · <a href={localize('/rss.xml', lang)}>RSS</a></p>
     </footer>
+    <script is:inline>
+      document.querySelector('.theme-toggle').addEventListener('click', () => {
+        const root = document.documentElement;
+        const current = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch {}
+      });
+    </script>
   </body>
 </html>

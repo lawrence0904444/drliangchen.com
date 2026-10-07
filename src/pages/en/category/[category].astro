@@ -1,0 +1,9 @@
+---
+import BlogList from '../../../components/BlogList.astro';
+import { CATEGORIES } from '../../../content.config';
+
+export function getStaticPaths() {
+  return Object.keys(CATEGORIES).map((category) => ({ params: { category } }));
+}
+---
+<BlogList lang="en" category={Astro.params.category as keyof typeof CATEGORIES} />
