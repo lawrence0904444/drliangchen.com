@@ -4,9 +4,10 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  jsonLd?: object | object[];
 }
 const SITE = '陳亮醫師 Liang Chen, MD';
-const { title, description = 'PGY 醫師陳亮的筆記、工具與隨筆。' } = Astro.props;
+const { title, description = 'PGY 醫師陳亮的筆記、工具與隨筆。', jsonLd } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE}` : SITE;
 const path = Astro.url.pathname;
 const nav = [
@@ -27,6 +28,7 @@ const nav = [
     <link rel="alternate" type="application/rss+xml" title={SITE} href="/rss.xml" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
   </head>
   <body>
     <header class="site-header">

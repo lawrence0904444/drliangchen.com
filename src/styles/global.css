@@ -57,6 +57,7 @@ blockquote { margin: 1em 0; padding: .2em 1em; border-left: 3px solid var(--acce
 table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
 th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
 
+.contains-task-list { list-style: none; padding-left: 0; }
 .post-list { list-style: none; padding: 0; margin: 0; }
 .post-list li { padding: 16px 0; border-bottom: 1px solid var(--line); }
 .post-list a.title { font-weight: 600; font-size: 1.08rem; color: var(--fg); text-decoration: none; }

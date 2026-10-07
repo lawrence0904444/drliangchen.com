@@ -16,6 +16,8 @@ const blog = defineCollection({
     category: z.enum(['notes', 'tools', 'essays']),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    // 常見問題：會顯示在文末，並輸出 FAQPage 結構化資料
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
   }),
 });
 
