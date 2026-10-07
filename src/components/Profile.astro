@@ -1,0 +1,23 @@
+---
+// 個人名片：首頁使用（照片、姓名、職稱、簡介、外部連結）
+import { localize, type Lang } from '../i18n';
+import { PHOTO, PROFILES } from '../seo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+---
+<section class="profile">
+  <img src={PHOTO} alt={zh ? '陳亮醫師' : 'Liang Chen, MD'} width="120" height="120" />
+  <div>
+    <h1>{zh ? '陳亮醫師' : 'Liang Chen, MD'}</h1>
+    <p class="lead">{zh ? 'Liang Chen, MD・台北慈濟醫院 PGY 醫師' : '陳亮・PGY Physician, Taipei Tzu Chi Hospital, Taiwan'}</p>
+    <p class="meta">{zh ? '復健醫學・疼痛醫學・運動醫學・實證醫學' : 'PM&R · Pain Medicine · Sports Medicine · Evidence-Based Medicine'}</p>
+    <div class="links">
+      <a class="chip" href={localize('/cv/', lang)}>{zh ? '完整簡歷' : 'Full CV'}</a>
+      <a class="chip" href={PROFILES.orcid} rel="me">ORCID</a>
+      <a class="chip" href={PROFILES.linkedin} rel="me">LinkedIn</a>
+      <a class="chip" href={PROFILES.github} rel="me">GitHub</a>
+    </div>
+  </div>
+</section>

@@ -8,13 +8,16 @@ interface Props {
   // 另一語言的對應頁面。預設為同路徑換語言；false 表示沒有翻譯（切換鈕改連到另一語言的文章列表）
   alt?: string | false;
   jsonLd?: object | object[];
+  fullTitle?: string; // 完整標題（不再加網站名稱後綴）
+  ogType?: 'website' | 'article' | 'profile';
 }
 const path = Astro.url.pathname;
 const lang = langFromPath(path);
 const other = lang === 'zh' ? 'en' : 'zh';
 const t = UI[lang];
-const { title, description = t.siteDescription, alt, jsonLd } = Astro.props;
-const fullTitle = title ? `${title} | ${t.site}` : t.site;
+const { title, description = t.siteDescription, alt, jsonLd, ogType = 'website' } = Astro.props;
+const fullTitle = Astro.props.fullTitle ?? (title ? `${title}${t.titleSuffix}` : t.homeTitle);
+const ogImage = new URL(`/images/og-${lang}.jpg`, Astro.site);
 const altHref = alt === false ? localize('/blog/', other) : alt ?? localize(stripLang(path), other);
 const nav = [
   { href: localize('/blog/', lang), label: t.nav.blog },
@@ -39,8 +42,19 @@ const nav = [
       </>
     )}
     <link rel="alternate" type="application/rss+xml" title={t.site} href={localize('/rss.xml', lang)} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={t.site} />
+    <meta property="og:url" content={new URL(path, Astro.site)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.ogImageAlt} />
+    <meta property="og:locale" content={t.ogLocale} />
+    <meta property="og:locale:alternate" content={UI[other].ogLocale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="author" content={t.brand} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     <script is:inline>
       // 在頁面繪製前套用主題，避免閃爍：使用者選過就用選的，否則跟隨系統

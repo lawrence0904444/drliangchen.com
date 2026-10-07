@@ -1,14 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
 import PostList from '../components/PostList.astro';
+import Profile from '../components/Profile.astro';
 import { getPosts } from '../lib';
+import { profilePageLd } from '../seo';
 
 const posts = (await getPosts()).slice(0, 5);
 ---
-<Base>
-  <h1>你好，我是陳亮</h1>
+<Base description="陳亮醫師（Liang Chen, MD），台北慈濟醫院 PGY 醫師，Cochrane 系統性回顧第一作者，關注復健、疼痛與運動醫學。這裡記錄臨床學習筆記、程式與 AI 工具，以及隨筆。" jsonLd={profilePageLd('zh', '/')}>
+  <Profile lang="zh" />
+  <p>
+    我是陳亮，慈濟大學醫學系畢業，目前在台北慈濟醫院接受 PGY 訓練。我是 Cochrane 系統性回顧
+    <a href="https://doi.org/10.1002/14651858.CD016383">〈TENS 治療慢性頸痛〉</a>的第一作者，
+    曾赴約翰霍普金斯醫院與麻省總醫院運動醫學中心臨床訪問。
+  </p>
   <p class="lead">
-    PGY 醫師。這裡記錄我在臨床訓練中的<a href="/category/notes/">學習筆記</a>、
+    這裡記錄我在臨床訓練中的<a href="/category/notes/">學習筆記</a>、
     用程式與 AI 打造的<a href="/category/tools/">工具</a>，以及一些<a href="/category/essays/">隨筆</a>。
   </p>
   <h2>最新文章</h2>

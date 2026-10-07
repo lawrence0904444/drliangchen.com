@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import { cv, cvHead } from '../data/cv';
-import type { Lang } from '../i18n';
+import { localize, type Lang } from '../i18n';
+import { PERSON_ID, PHOTO, profilePageLd } from '../seo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -9,15 +10,46 @@ type Text = string | { zh: string; en: string };
 const tr = (x: Text) => (typeof x === 'string' ? x : x[lang]);
 const sections = cv.filter((s) => s.groups.some((g) => g.items.length > 0));
 const page = lang === 'zh'
-  ? { title: '簡歷', description: '陳亮醫師的學經歷、研究發表、海外見習與獲獎。' }
-  : { title: 'CV', description: 'Curriculum vitae of Liang Chen, MD: education, publications, observerships and honors.' };
+  ? {
+      title: '簡歷',
+      fullTitle: '陳亮醫師 簡歷（CV）｜復健・疼痛・運動醫學',
+      description: '陳亮醫師（Liang Chen, MD）的簡歷：台北慈濟醫院 PGY 醫師，Cochrane 系統性回顧第一作者，約翰霍普金斯與麻省總醫院臨床訪問，研究發表與獲獎。',
+    }
+  : {
+      title: 'CV',
+      fullTitle: 'Liang Chen, MD – CV | PM&R, Pain & Sports Medicine',
+      description: 'Curriculum vitae of Liang Chen, MD: PGY physician at Taipei Tzu Chi Hospital, first author of a Cochrane review protocol, visiting observer at Johns Hopkins and Mass General Brigham, publications and honors.',
+    };
+// 已刊出、有 DOI 的論文才標成 ScholarlyArticle；投稿中與撰寫中的不標
+const publications = [
+  {
+    '@type': 'ScholarlyArticle',
+    '@id': 'https://doi.org/10.1002/14651858.CD016383',
+    headline: 'Transcutaneous electrical nerve stimulation (TENS) for chronic neck pain (Protocol)',
+    isPartOf: { '@type': 'Periodical', name: 'Cochrane Database of Systematic Reviews' },
+    datePublished: '2026-08',
+    url: 'https://doi.org/10.1002/14651858.CD016383',
+    sameAs: 'https://doi.org/10.1002/14651858.CD016383',
+    author: [
+      { '@id': PERSON_ID },
+      { '@type': 'Person', name: 'Wen-Hsuan Hou' },
+      { '@type': 'Person', name: 'Rachel Riera' },
+      { '@type': 'Person', name: 'Cheng Wei Su' },
+      { '@type': 'Person', name: 'Yi-Shiung Horng' },
+    ],
+  },
+];
+const jsonLd = profilePageLd(lang, localize('/cv/', lang), publications);
 ---
-<Base title={page.title} description={page.description}>
+<Base title={page.title} fullTitle={page.fullTitle} description={page.description} jsonLd={jsonLd} ogType="profile">
   <h1>{page.title}</h1>
-  <div class="cv-head">
+  <div class="cv-head profile">
+    <img src={PHOTO} alt={cvHead.name[lang]} width="120" height="120" />
+    <div>
     <p><strong>{cvHead.name[lang]}</strong></p>
     <p class="lead">{cvHead.title[lang]}</p>
     <p class="lead">{cvHead.interests[lang]}</p>
+    </div>
   </div>
 
   {sections.map((section) => (

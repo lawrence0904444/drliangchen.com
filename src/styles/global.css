@@ -106,3 +106,18 @@ a.chip:hover, a.chip[aria-current] { border-color: var(--accent); color: var(--a
 .todo { background: #fff3c4; color: #5c4a00; padding: 0 .3em; border-radius: 3px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .todo { background: #4a3f12; color: #ffe9a3; } }
 :root[data-theme="dark"] .todo { background: #4a3f12; color: #ffe9a3; }
+
+/* 個人介紹（首頁、簡歷）與文章作者框 */
+.profile { display: flex; gap: 24px; align-items: center; margin: 8px 0 24px; }
+.profile img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; flex: none; border: 3px solid var(--line); }
+.profile h1 { margin: 0 0 4px; }
+.profile p { margin: 2px 0; }
+.profile .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+@media (max-width: 520px) { .profile { flex-direction: column; align-items: flex-start; text-align: left; } }
+.author-box { display: flex; gap: 16px; align-items: flex-start; margin-top: 48px; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.author-box img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: none; }
+.author-box p { margin: 2px 0; }
+.author-name { font-weight: 600; }
+.author-name a { color: var(--fg); text-decoration: none; }
+.facts dt { font-weight: 600; margin-top: 14px; }
+.facts dd { margin: 4px 0 0; color: var(--fg); }
