@@ -1,0 +1,12 @@
+studlab,year,rob,treat,treat_class,vas_mean,vas_sd,vas_n,mean_age
+Lin_2019,2019,L,Placebo,Control,5.9,1.5,50,62.5
+Lin_2019,2019,L,Oral_NSAID,NSAID,3.9,1.4,52,62.5
+Wang_2020,2020,M,Placebo,Control,5.8,1.6,48,64.0
+Wang_2020,2020,M,Topical_NSAID,NSAID,4.3,1.5,50,64.0
+Chen_2021,2021,L,Placebo,Control,6.0,1.5,55,61.2
+Chen_2021,2021,L,Oral_NSAID,NSAID,3.8,1.4,54,61.2
+Chen_2021,2021,L,Topical_NSAID,NSAID,4.2,1.5,53,61.2
+Tanaka_2022,2022,M,Oral_NSAID,NSAID,4.0,1.4,49,66.8
+Tanaka_2022,2022,M,IA_HA,Injection,3.4,1.4,50,66.8
+Kim_2023,2023,H,Placebo,Control,5.7,1.7,60,63.4
+Kim_2023,2023,H,IA_HA,Injection,3.5,1.5,61,63.4

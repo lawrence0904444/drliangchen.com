@@ -1,0 +1,6 @@
+Study,T.1,Mean.1,SD.1,N.1,T.2,Mean.2,SD.2,N.2,T.3,Mean.3,SD.3,N.3,covar.age
+Lin_2019,Placebo,5.9,1.5,50,Oral_NSAID,3.9,1.4,52,,,,,62.5
+Wang_2020,Placebo,5.8,1.6,48,Topical_NSAID,4.3,1.5,50,,,,,64.0
+Chen_2021,Placebo,6.0,1.5,55,Oral_NSAID,3.8,1.4,54,Topical_NSAID,4.2,1.5,53,61.2
+Tanaka_2022,Oral_NSAID,4.0,1.4,49,IA_HA,3.4,1.4,50,,,,,66.8
+Kim_2023,Placebo,5.7,1.7,60,IA_HA,3.5,1.5,61,,,,,63.4

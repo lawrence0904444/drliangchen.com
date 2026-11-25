@@ -1,0 +1,7 @@
+"Comparison","Number of studies","Within-study bias","Reporting bias","Indirectness","Imprecision","Heterogeneity","Incoherence","Confidence rating","Reason(s) for downgrading"
+"DrugA:DrugB",2,"Some concerns","Low risk","No concerns","No concerns","Some concerns","No concerns","Low","[""Within-study bias"",""Heterogeneity""]"
+"DrugA:Placebo",3,"Some concerns","Low risk","No concerns","No concerns","No concerns","No concerns","Moderate","[""Within-study bias""]"
+"DrugB:DrugC",1,"Low risk","Low risk","Some concerns","No concerns","No concerns","No concerns","Moderate","[""Indirectness""]"
+"DrugB:Placebo",2,"Some concerns","Low risk","No concerns","No concerns","No concerns","No concerns","Moderate","[""Within-study bias""]"
+"DrugC:Placebo",1,"High risk","Low risk","Some concerns","No concerns","Some concerns","No concerns","Very low","[""Within-study bias"",""Indirectness"",""Heterogeneity""]"
+"DrugA:DrugC",0,"Some concerns","Low risk","No concerns","Major concerns","No concerns","No concerns","Very low","[""Within-study bias"",""Imprecision""]"
