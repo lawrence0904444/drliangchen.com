@@ -1,0 +1,8 @@
+studlab,year,rob,treat1,treat2,treat1_class,treat2_class,r1_resp,n1_resp,r2_resp,n2_resp,r1_ae,n1_ae,r2_ae,n2_ae,mean_age
+Lin_2019,2019,L,Placebo,Oral_NSAID,Control,NSAID,12,50,28,52,5,50,14,52,62.5
+Wang_2020,2020,M,Placebo,Topical_NSAID,Control,NSAID,10,48,24,50,4,48,7,50,64.0
+Chen_2021,2021,L,Placebo,Oral_NSAID,Control,NSAID,11,55,30,54,6,55,15,54,61.2
+Chen_2021,2021,L,Placebo,Topical_NSAID,Control,NSAID,11,55,25,53,6,55,8,53,61.2
+Chen_2021,2021,L,Oral_NSAID,Topical_NSAID,NSAID,NSAID,30,54,25,53,15,54,8,53,61.2
+Tanaka_2022,2022,M,Oral_NSAID,IA_HA,NSAID,Injection,26,49,29,50,13,49,6,50,66.8
+Kim_2023,2023,H,Placebo,IA_HA,Control,Injection,14,60,35,61,6,60,7,61,63.4

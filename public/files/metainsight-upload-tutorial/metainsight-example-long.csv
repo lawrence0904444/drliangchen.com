@@ -1,0 +1,12 @@
+Study,T,R,N,covar.age
+Lin_2019,Placebo,12,50,62.5
+Lin_2019,Oral_NSAID,28,52,62.5
+Wang_2020,Placebo,10,48,64.0
+Wang_2020,Topical_NSAID,24,50,64.0
+Chen_2021,Placebo,11,55,61.2
+Chen_2021,Oral_NSAID,30,54,61.2
+Chen_2021,Topical_NSAID,25,53,61.2
+Tanaka_2022,Oral_NSAID,26,49,66.8
+Tanaka_2022,IA_HA,29,50,66.8
+Kim_2023,Placebo,14,60,63.4
+Kim_2023,IA_HA,35,61,63.4

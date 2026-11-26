@@ -1,0 +1,16 @@
+id,t,r,n,rob,indirectness
+1,Placebo,15,60,1,1
+1,DrugA,28,60,1,1
+2,Placebo,10,50,2,1
+2,DrugA,26,50,2,1
+3,Placebo,14,65,1,1
+3,DrugB,38,65,1,1
+4,Placebo,12,55,3,2
+4,DrugC,20,55,3,2
+5,DrugA,24,55,2,1
+5,DrugB,34,55,2,1
+6,DrugB,32,50,1,2
+6,DrugC,22,50,1,2
+7,Placebo,16,70,2,1
+7,DrugA,33,70,2,1
+7,DrugB,41,70,2,1
