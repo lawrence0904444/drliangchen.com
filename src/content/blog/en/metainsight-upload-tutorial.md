@@ -1,19 +1,39 @@
 ---
-title: 'Uploading Data to MetaInsight: From Excel to Network Meta-Analysis'
-description: A step-by-step guide to preparing long or wide format data and uploading it to MetaInsight (v7.1.1), with example CSVs you can copy, Excel tips and fixes for common errors.
+title: 'MetaInsight v7.1.1 Data Upload Tutorial: From Excel to NMA'
+description: How to upload data to MetaInsight v7.1.1. Step-by-step guide to long and wide CSV formatting from Excel, case-sensitive headers, ranking direction, 4 example CSVs and troubleshooting.
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [Evidence-based medicine, Network meta-analysis, Research methods]
+tags: [MetaInsight, Network meta-analysis, Evidence-based medicine, Research methods]
 draft: false
+faq:
+  - q: 'Why does the MetaInsight URL show a 404 Page not found error?'
+    a: 'The official MetaInsight v7.1.1 address requires a trailing slash: https://crsu-metainsight.le.ac.uk/MetaInsight/. Leaving off the trailing slash returns a 404 error.'
+  - q: 'Can I upload an Excel (.xlsx) file directly to MetaInsight, or do I need a CSV?'
+    a: 'MetaInsight v7.1.1 supports direct .xlsx uploads, but saving your tidied table as CSV UTF-8 (Comma delimited) in Excel is still recommended to avoid hidden formatting issues or reading the wrong worksheet.'
+  - q: 'Should I choose long or wide format, and how many trial arms does MetaInsight support?'
+    a: 'Use the long format (one row per arm) if you have trials with three or more arms or many study-level covariates. If all trials have two arms, wide format is also fine. MetaInsight currently supports up to six arms per trial (up to .6 in wide format).'
+  - q: 'How should I handle zero events in MetaInsight, and can I add 0.5 for Bayesian analysis?'
+    a: 'If you only run a Frequentist model (netmeta) and a study has zero events in one arm, you can apply the standard 0.5 continuity correction in Excel (add 0.5 to R and 1 to N in every arm of that study). However, Bayesian binomial models (gemtc) expect integer event counts, so entering decimals like 0.5 may cause errors or depart from standard Bayesian practice. Studies with zero events in both arms are generally excluded from relative effect estimates; upload raw integers first, check the Log window, and run a sensitivity analysis if needed.'
+  - q: 'Why do I still see the default example data after selecting my file, or why are the treatment rankings upside down?'
+    a: 'After selecting your file and waiting for the red progress bar to say Upload complete, you must click the blue Load data button below to actually load the file. If rankings are reversed, check For treatment rankings, ORs less than 1 are under Configure analysis: for efficacy outcomes where a larger OR is better, change the default Desirable to Undesirable.'
 ---
 
-If you already run conventional pairwise meta-analyses in RevMan or R, the hardest part of your first network meta-analysis (NMA) is usually not the statistical model. It is the upload that keeps throwing errors.
+**To upload data to MetaInsight v7.1.1: prepare a long or wide CSV in Excel with exact case-sensitive headers, open the official URL ending with `/`, go to `Setup`, select your file and click the blue `Load data` button, then set the reference treatment and ranking direction in `Configure analysis`.** If you already run conventional pairwise meta-analyses in RevMan or R, the hardest part of your first network meta-analysis (NMA) is usually not the statistical model. It is the upload that keeps throwing errors.
 
-This post uses **MetaInsight**, one of the most widely used NMA tools among clinicians and graduate students in Taiwan, and follows the v7.1.1 interface updated in June 2026.
+> **Free Online NMA Tools Trilogy (Part 1):** This series covers three widely used free web tools for NMA. Part 1 uses **MetaInsight v7.1.1** for statistical modelling (Bayesian MCMC and meta-regression); Part 2 uses [NMAstudio 2.0](/en/blog/nmastudio-upload-tutorial/) for multi-outcome interactive plots; Part 3 uses [CINeMA 3.0.1](/en/blog/cinema-upload-tutorial/) for GRADE-based confidence ratings.
 
-The address is `https://crsu-metainsight.le.ac.uk/MetaInsight/`. **The trailing slash `/` is required.** Without it you get a 404.
+This post uses **MetaInsight**, one of the most widely used NMA tools among clinicians and graduate students in Taiwan, and follows the v7.1.1 interface updated in June 2026. The address is [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/). **The trailing slash `/` is required.** Without it you get a 404.
 
 This post covers three things only: preparing your data in Excel, saving it as CSV, and checking that it was read correctly after upload. Interpreting the plots will be a separate post.
+
+## Key points
+
+- **Include the trailing `/` in the URL**, or you will get a 404; if the v7.1.1 server is busy, use the temporary v6 backup link.
+- **Headers are fixed and case-sensitive**: treatment names may only contain letters, numbers and underscores `_` (no spaces, hyphens `-` or non-English characters).
+- **Prefer long format**: it is hardest to get wrong for multi-arm trials (up to 6 arms supported); save as CSV UTF-8 even though `.xlsx` is accepted.
+- **Always click `Load data` after selecting a file**: wait for `Upload complete`, then click the blue button to actually load your dataset.
+- **Check the ranking direction**: `ORs less than 1 are` defaults to `Desirable` (for harms); for beneficial outcomes such as pain relief, switch it to `Undesirable`.
 
 ## What is MetaInsight, and who is it for?
 
@@ -37,7 +57,7 @@ Medical students, PGY doctors, residents and graduate students can use it, for a
 - Strict formatting rules for treatment names and multi-arm trial columns.
 - The free online server can be slow when many people use it at once.
 
-> **Version note:** The main MetaInsight site is now v7.1.1 (updated 2026-06-17). It looks different from the v5/v6 screenshots in many older tutorials online. The old version is temporarily kept at `https://crsu.shinyapps.io/MetaInsight_V6/`. Follow the v7.1.1 interface.
+> **Version note:** The main MetaInsight site is now v7.1.1 (updated 2026-06-17). It looks different from the v5/v6 screenshots in many older tutorials online. The old version is temporarily kept at [https://crsu.shinyapps.io/MetaInsight_V6/](https://crsu.shinyapps.io/MetaInsight_V6/). Follow the v7.1.1 interface.
 
 ## Before you start: what data do you need?
 
@@ -61,7 +81,7 @@ MetaInsight accepts two layouts, and either one works:
 | --- | --- | --- |
 | Binary, long (one row per arm) | `Study, T, R, N` | Hardest to get wrong with multi-arm trials; most recommended |
 | Binary, wide (one row per study) | `Study, T.1, R.1, N.1, T.2, R.2, N.2, ...` | Up to `.6` (six-arm trials) |
-| Continuous, long (one row per arm) | `Study, T, N, Mean, SD` | First choice for continuous outcomes |
+| Continuous, long (one row per arm) | `Study, T, Mean, SD, N` | First choice for continuous outcomes (columns are matched by name, so order is flexible) |
 | Continuous, wide (one row per study) | `Study, T.1, Mean.1, SD.1, N.1, T.2, ...` | Leave the `.3` columns blank for two-arm studies |
 
 ## Column reference
@@ -173,9 +193,10 @@ MetaInsight v7.1.1 can now read `.xlsx` files directly. Even so, I recommend tid
 1. **Clean up all treatment names in one go**: use Excel's Find and Replace to replace spaces, hyphens (`-`), slashes (`/`) and brackets with an underscore `_`, or remove them. For example, change `Oral-NSAID` to `Oral_NSAID`. Do not use non-English characters in treatment names.
 2. **No two arms in the same study can have the same name**: MetaInsight **does not accept two arms with the same treatment in one study**. If a trial compares a low and a high dose of the same drug, give them different names from the start, for example `Drug_10mg` and `Drug_20mg`. Otherwise, merge the two arms first according to your protocol.
 3. **Two-arm trials in wide format**: leave `T.3`, `R.3` and `N.3` completely blank for two-arm studies. Do not type `NA` or `-`. Before saving, check that every row has the same number of columns.
-4. **Handling zero events**: in the Binary Long guidance, the site warns: `N.B. Continuity corrections will need to be applied to cells containing 0 values`. In other words, cells with 0 need a continuity correction first.
-   - If only one arm has `0` events: apply the standard `0.5` correction in Excel before uploading. **Add `0.5` to `R` and `1` to `N` in every arm of that study.**
-   - If both arms have `0` events: by usual meta-analysis practice, the study is generally left out of the relative effect estimate.
+4. **Handling zero events**: in the Binary Long guidance, the site warns: `N.B. Continuity corrections will need to be applied to cells containing 0 values`. How you handle them depends on the model you plan to run:
+   - **Frequentist only (`netmeta`) with `0` events in one arm**: apply the standard `0.5` correction in Excel before uploading by **adding `0.5` to `R` and `1` to `N` in every arm of that study**. Note that a fixed `0.5` correction can introduce bias when events are rare or arms are imbalanced, so check stability with a sensitivity analysis.
+   - **Bayesian analysis (`gemtc`)**: binomial likelihood models expect integer event counts. Entering decimals such as `0.5` may trigger errors or depart from standard Bayesian handling, so upload raw integer counts first and check the Log window.
+   - **Zero events in both arms**: by usual meta-analysis practice, the study is generally left out of the relative effect estimate.
    - Note: MetaInsight's built-in binary example file `MetaInsight_binary_long.csv` still contains one record with `R=0`. After uploading, always double-check the results and the Log window.
 5. **Want to compare with the official template?** Go to `Setup` → `Load data`, choose the outcome type and format, then click `Download example data` at the bottom left to get the matching official example CSV. There are four: continuous long/wide and binary long/wide.
 
@@ -183,7 +204,7 @@ MetaInsight v7.1.1 can now read `.xlsx` files directly. Even so, I recommend tid
 
 ### Step 1: Open the home page and go to Setup
 
-1. Open `https://crsu-metainsight.le.ac.uk/MetaInsight/` in your browser (check that the address ends with `/`).
+1. Open [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/) in your browser (check that the address ends with `/`).
 2. If a GDPR privacy pop-up appears the first time, click `Accept`.
 3. Click `Setup` in the top navigation bar.
 
@@ -231,7 +252,7 @@ Once the data looks right, click `Configure analysis` in the left navigation pan
 4. When you are done, click the `Configure analysis` button at the bottom.
 
 ![The Configure analysis panel, with red boxes around the reference treatment, the ranking direction setting and the Configure analysis button](/images/blog/metainsight-upload-tutorial/05-configure-analysis.png)
-*Based on the clinical meaning of your outcome, decide whether OR < 1 is Desirable or Undesirable, then click the button below.*
+*The screenshot shows the default state (`Desirable`) upon opening the page. Because this example uses pain relief response, remember to switch it to `Undesirable` before clicking the button below.*
 
 ## How to check that your data was read correctly
 
@@ -242,34 +263,33 @@ After `Configure analysis`, check two places before starting the real analysis:
    - no rows are missing from three-arm trials, and there are no extra blank rows;
    - covariates starting with `covar.` have the same value in every arm of the same study.
 2. **Check the Summary and the network plot**:
-   - Click `Summary` → `Characterise the data` → `Generate tables` at the top and check the number of studies and treatments.
-   - Then go to `Summary` → `Network plots` → `Generate plots` and make sure all treatment nodes form one connected network. If the capitalisation is wrong (for example `Placebo` and `placebo`), the same treatment will be split into two disconnected nodes.
-
-<!-- Screenshot to be added: Summary -> Characterise the data summary table and Summary -> Network plots network plot (during testing, the v7.1.1 online server stayed on "Configuring analysis..." after clicking Configure analysis and returned a configured_data error) -->
+   - Click `Summary` → `Data characteristics` in the top navigation bar to review the summary tables and confirm the number of studies and treatments.
+   - Then go to `Summary` → `Network plot` and make sure all treatment nodes form one connected network. If the capitalisation is wrong (for example `Placebo` and `placebo`), the same treatment will be split into two disconnected nodes.
 
 Once everything checks out, choose a tab at the top to start the analysis:
 
 - `Frequentist`: forest plots, league table and inconsistency tests.
 - `Bayesian`: MCMC simulation, SUCRA rankings and node-splitting.
 - `Covariate`: if you uploaded `covar.<name>` columns, run meta-regression here.
+- `Export`: if you included `rob` and `indirectness` columns, export your data here (e.g. `.json` for conversion via `cinemar` into CINeMA).
 
 ## Troubleshooting
 
 | Problem | Common cause | Fix |
 | --- | --- | --- |
-| The site shows `404 Page not found` | The trailing slash `/` is missing from the address | Use the full address `https://crsu-metainsight.le.ac.uk/MetaInsight/` |
+| The site shows `404 Page not found` | The trailing slash `/` is missing from the address | Use the full address [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/) |
 | The Log window shows a treatment name error after upload | Treatment names contain spaces, non-English characters, hyphens `-` or other symbols | In Excel, change every `T` value to letters, numbers and `_` only (e.g. `Oral_NSAID`) |
 | Error message about duplicate treatment arms | Two rows in the same study have the same `T` name | Name them by dose (e.g. `Drug_Low`, `Drug_High`), or merge the data for those arms first |
 | Columns not found, or covariates not read | Wrong capitalisation in column names (e.g. `study`, `mean`), or missing `covar.` prefix | Fix the header to match the column reference exactly: `Study`, `T`, `R`, `N`, `Mean`, `SD`, `covar.age` |
 | Can't analyse after loading, or only see the default data | Forgot to click the blue `Load data` button after selecting the file | Wait for the red progress bar to show `Upload complete`, then click `Load data` |
 | Error for trials with more than 6 arms | MetaInsight currently allows at most 6 arms per trial | Make sure no study has more than 6 arms, or merge similar dose groups based on clinical definitions |
-| Spinning wheel that never stops after clicking `Configure analysis` | The v7.1.1 online server occasionally drops its SockJS connection, or the back end is busy | Refresh the page and try again, or temporarily use the old version announced on the site, `https://crsu.shinyapps.io/MetaInsight_V6/` |
+| Spinning wheel that never stops after clicking `Configure analysis` | The v7.1.1 online server occasionally drops its SockJS connection, or the back end is busy | Refresh the page and try again, or temporarily use the old version announced on the site, [https://crsu.shinyapps.io/MetaInsight_V6/](https://crsu.shinyapps.io/MetaInsight_V6/) |
 
 ## Further reading and choosing a tool
 
-If you want to **compare two outcomes from the same dataset at once (for example efficacy and side effects) and colour the results by CINeMA confidence ratings**, read the next post: [Uploading Data to NMAstudio: From Excel to an Interactive Network Meta-Analysis](/en/blog/nmastudio-upload-tutorial/).
+If you want to **compare two outcomes from the same dataset at once (for example efficacy and side effects) and colour the results interactively**, read Part 2: [NMAstudio 2.0 Data Upload Tutorial: From Excel to Interactive NMA](/en/blog/nmastudio-upload-tutorial/). To rate **GRADE-based confidence in the evidence**, read Part 3: [CINeMA 3.0.1 Upload Tutorial: Rating NMA Evidence Confidence (GRADE)](/en/blog/cinema-upload-tutorial/).
 
-In short: **MetaInsight's strengths are its built-in Bayesian MCMC models and covariate meta-regression; NMAstudio 2.0 is better at showing several outcomes side by side and integrating CINeMA.**
+In short: **MetaInsight excels at built-in Bayesian MCMC models and covariate meta-regression; NMAstudio 2.0 excels at multi-outcome side-by-side comparisons and visual transitivity checks; CINeMA 3.0.1 handles the six-domain certainty-of-evidence assessment.**
 
 ## References
 

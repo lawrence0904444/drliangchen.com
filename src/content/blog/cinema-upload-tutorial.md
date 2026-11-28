@@ -1,13 +1,29 @@
 ---
-title: CINeMA 上傳教學：一步一步評估網路統合分析的證據可信度
-description: 從整理 rob 與 indirectness 欄位、上傳 CSV，到逐一完成六個面向的評估並匯出報告。附範例資料與截圖。
+title: CINeMA 3.0.1 上傳教學：評估網路統合分析 GRADE 證據可信度
+description: CINeMA 3.0.1（cinema.med.auth.gr）完整教學：整理 rob 與 indirectness CSV、設定統計模型、解讀貢獻矩陣與六大 GRADE 面向，匯出報告回傳 NMAstudio。附 5 份範例檔。
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [實證醫學, 網路統合分析, GRADE, 研究方法]
+tags: [CINeMA, 網路統合分析, GRADE, 實證醫學, 研究方法]
 draft: false
+faq:
+  - q: 'CINeMA 的新網址是什麼？需要註冊帳號嗎？資料會不會不見？'
+    a: '原網址 cinema.ispm.unibe.ch 已轉址到現行官網 https://cinema.med.auth.gr/。CINeMA 免費且不需註冊登入，但資料只暫存在瀏覽器的 localStorage 中，清除快取或換電腦就會消失，做完務必回到 Projects 匯出 .cdb 或 .cnm 備份檔。'
+  - q: 'CINeMA 3.0.1 上傳 CSV 時，rob 和 indirectness 欄位一定要填嗎？怎麼編碼？'
+    a: '雖然 3.0.0 更新說明將 rob 改為選填，但實測 CINeMA 3.0.1 的前端驗證仍要求必須有 rob 欄才能上傳，indirectness 則建議一併填入。兩者皆以研究（id）為單位，可用 1/2/3 或 L/M/H（低、中、高風險或間接性）編碼，且全表不可有任何空白儲存格。'
+  - q: '沒有直接比較（純間接證據）算是 Indirectness（間接性）嗎？'
+    a: '不是。Indirectness 評估的是納入研究的 PICO（族群、介入、對照、結果）是否偏離你的臨床問題，與網絡圖上有沒有直接連線無關。缺乏直接比較所帶來的不確定性，會反映在 Imprecision（不精確性）和 Incoherence（不一致性）的評等中。'
+  - q: 'CINeMA 的 Imprecision（不精確性）怎麼判定 No concerns、Some concerns 和 Major concerns？'
+    a: '以無效線（如 OR = 1）和臨床等效區間（例如 0.800 至 1.250）共同判定：若 95% 信賴區間完全落在無效線同一側，或完全落在等效區間內，判 No concerns；若跨過無效線並延伸進單側臨床門檻，判 Some concerns；若同時跨過兩側門檻（同時涵蓋臨床上重要的好處與壞處），判 Major concerns。'
+  - q: '為什麼整個網絡的 τ² = 0，Heterogeneity（異質性）卻還是亮黃燈（Some concerns）？'
+    a: '因為 95% 預測區間（PI）在計算時採用自由度較小的 t 分佈而非標準常態分佈（z = 1.96），所以即使研究間變異 τ² = 0.000，95% PI 仍會比 95% CI 寬。只要 PI 跨過了無效線或門檻而改變了原本 CI 的臨床判讀，系統就會判為 Some concerns。'
+  - q: '為什麼匯出的 Report.csv 全部都是 High？要怎麼匯入回 NMAstudio？'
+    a: '因為 CINeMA 在 Report 頁面預設所有比較的最終評級都是 High。你必須手動勾選黃色或紅色格子裡的核取方塊填入降級理由，並從 Confidence rating 下拉選單改選 Moderate、Low 或 Very low 後再下載 Report.csv。之後可將此檔上傳到 NMAstudio 2.0 的 CINeMA 分頁自動替 league table 上色。'
 ---
 
-這是「網路統合分析（network meta-analysis，簡稱 NMA）免費線上工具」系列教學的第三篇。第一篇用 [MetaInsight](/blog/metainsight-upload-tutorial/) 跑統計模型，第二篇用 [NMAstudio](/blog/nmastudio-upload-tutorial/) 畫互動圖表。這一篇要完成投稿前的最後一步：用 **CINeMA（Confidence in Network Meta-Analysis）** 評估每一組治療比較的證據可信度（confidence in evidence）。
+**CINeMA 3.0.1（現行網址 [https://cinema.med.auth.gr/](https://cinema.med.auth.gr/)）的標準操作流程是：準備含 `rob` 與 `indirectness` 且無空白格的 CSV → 建立 Collection 上傳並設定模型 → 下載貢獻矩陣後依序評估六個 GRADE 面向 → 在 Report 頁面手動勾選降級理由並改寫評級，最後匯出 CSV 與 `.cdb`/`.cnm` 備份。** 這是「網路統合分析（network meta-analysis，簡稱 NMA）免費線上工具」系列教學的第三篇。第一篇用 [MetaInsight v7.1.1](/blog/metainsight-upload-tutorial/) 跑統計模型，第二篇用 [NMAstudio 2.0](/blog/nmastudio-upload-tutorial/) 畫互動圖表。這一篇要完成投稿前的最後一步：用 **CINeMA（Confidence in Network Meta-Analysis）** 評估每一組治療比較的證據可信度（confidence in evidence）。
+
+> **免費線上 NMA 工具三部曲（第 3 篇）**：第 1 篇 [MetaInsight v7.1.1](/blog/metainsight-upload-tutorial/) 負責統計模型與貝氏分析；第 2 篇 [NMAstudio 2.0](/blog/nmastudio-upload-tutorial/) 負責多結果並排與遞移性視覺檢查；本篇 **CINeMA 3.0.1** 負責 GRADE 六大面向證據可信度評級，報告可匯回 NMAstudio 上色。
 
 CINeMA 由伯恩大學 ISPM 開發，是 Cochrane 推薦用來評估 NMA 證據等級的官方工具。要注意的是，**原網址 `https://cinema.ispm.unibe.ch/` 現在已轉址到 [https://cinema.med.auth.gr/](https://cinema.med.auth.gr/)**。本文的畫面與實測都以目前的 CINeMA 3.0.1 為準。
 
@@ -15,6 +31,14 @@ CINeMA 由伯恩大學 ISPM 開發，是 Cochrane 推薦用來評估 NMA 證據�
 
 - CINeMA 最後匯出的 `.csv` 報告可以上傳回 NMAstudio，讓 league table 依可信度自動上色。
 - 新版 CINeMA 也能匯入 MetaInsight 匯出的 `.json`，做法是先用官方 `cinemar` R 套件轉成 `.cnm` 檔。
+
+## 重點整理
+
+- **網址已轉移**：原 `cinema.ispm.unibe.ch` 已轉址至 `cinema.med.auth.gr`。
+- **純瀏覽器暫存**：免登入，但資料只存在 `localStorage`，做完務必匯出 `.cdb` 或 `.cnm` 備份。
+- **無空白格與 `rob` 必填**：全表不可有空白儲存格，且 3.0.1 前端實測仍強制要求 `rob` 欄位（建議用 `1/2/3`）。
+- **勿在 Heterogeneity 誤按 `Reset`**：`Imprecision`、`Heterogeneity`、`Incoherence` 三頁共用同一個臨床重要門檻，按 `Reset` 會一起歸回預設值。
+- **Report 頁必須手動降級**：系統預設全為 `High`，需逐一勾選黃／紅格的降級理由並手動修改 `Confidence rating` 下拉選單再匯出。
 
 ## CINeMA 是什麼？跟 GRADE 的關係與六個面向
 
@@ -289,26 +313,26 @@ id,t1,y1,sd1,n1,t2,y2,sd2,n2,rob,indirectness
 ### 4. Imprecision（不精確性）
 
 - **做什麼／怎麼選**：在 **`Define clinically important size of effect: Odds ratio`** 輸入臨床上有意義的最小效果門檻，點 **`Set`**，再按 **`Proceed`**。這個門檻沒有公定值，要依臨床專業事先決定；本範例設為 **`1.25`**。
-- **看到什麼**：系統會自動算出倒數 **`0.800`**，所以「臨床上沒有差別」的區間是 `0.800–1.250`。前 5 組比較的 95% CI 都只在門檻的同一側（畫面顯示 `does not cross clinically important effect`），判為 `No concerns`。只有純間接比較 **`DrugA:DrugC`**（OR 1.392，95% CI 0.700–2.768）同時跨過 `0.800` 和 `1.250` 兩條線，亮紅燈判為 **`Major concerns`**。
+- **看到什麼**：系統會自動算出倒數 **`0.800`**，所以「臨床上沒有差別」的等效區間（range of equivalence）是 `0.800–1.250`。前 5 組比較的 95% CI 都**完全落在無效線（OR = 1）的同一側**（例如 `DrugA:DrugB` 的 `0.377–0.900` 皆小於 1、`DrugC:Placebo` 的 `1.166–4.058` 皆大於 1），即使區間一端進入 `0.800–1.250` 內，只要未跨過無效線 `1` 就代表方向明確，畫面顯示 `does not cross clinically important effect`，判為 `No concerns`。只有純間接比較 **`DrugA:DrugC`**（OR 1.392，95% CI `0.700–2.768`）同時跨過無效線 `1` 及 `0.800`、`1.250` 兩側門檻，亮紅燈判為 **`Major concerns`**。
 - **常見錯誤**：沿用預設值 `1` 直接按 Set，等於沒有設定「沒有差別」的區間。另一個錯誤是連續型結果（MD）也直接填 1.25，而沒有換成該量表的最小臨床重要差異（MCID）。
 
 ![Imprecision 頁面設定臨床重要門檻 1.25 並自動判斷各比較信賴區間](/images/blog/cinema-upload-tutorial/07-imprecision.png)
 
-*在紅框輸入 `1.25` 並點 `Set` 後，可以看到純間接比較 `DrugA:DrugC` 的 95% CI 跨過兩側門檻，被標成紅色 `Major concerns`。*
+*在紅框輸入 `1.25` 並點 `Set` 後，前 5 組比較的 95% CI 皆未跨過無效線 `1` 而維持綠燈；僅純間接比較 `DrugA:DrugC` 跨過兩側門檻，被標成紅色 `Major concerns`。*
 
-> **一句話判讀原則**：95% CI 跨過一側的臨床門檻，判 `Some concerns`；同時跨過兩側（同時涵蓋臨床上有意義的好處與壞處），判 `Major concerns`。
+> **一句話判讀原則**：95% CI 完全落在無效線（OR = 1）同一側，或完全落在等效區間內，判 `No concerns`；跨過無效線並延伸進單側臨床重要門檻，判 `Some concerns`；同時跨過兩側門檻（同時涵蓋臨床上有意義的好處與壞處），判 `Major concerns`。
 
 ### 5. Heterogeneity（異質性）
 
 先釐清兩個名詞：
 
 - **τ²（tau 平方）**：研究間變異（between-study variance）。數值越大，代表各研究的結果彼此差異越大。
-- **95% 預測區間（prediction interval，PI）**：預估「下一個新研究」的真實效果可能落在哪個範圍。它把研究間變異也算進去，所以通常比 95% CI 寬。
+- **95% 預測區間（prediction interval，PI）**：預估「下一個新研究」的真實效果可能落在哪個範圍。它把研究間變異也算進去，且計算時採用自由度較小的 t 分佈（而非 95% CI 用的標準常態 z = 1.96），所以**即使整個網絡的 τ² = 0，95% PI 仍會比 95% CI 寬**。
 
 操作方式：
 
 - **做什麼／怎麼選**：這一頁會自動沿用上一步的 `0.800–1.250`，輸入框會鎖住。下方有一個選填的 **`Select type of intervention and outcome`**，指定治療與結果類型後點 **`View`**，系統會列出過去同類研究常見的 τ² 參考範圍，讓你判斷自己網絡的研究間變異是偏小、正常還是偏大。確認後點 **`Proceed`**。
-- **看到什麼**：整個網絡的 τ² = 0.000。部分比較的 I² = 0.0%，但 **`DrugA:DrugB`**（95% CI 0.377–0.900；95% PI 0.329–1.030）和 **`DrugC:Placebo`**（CI 1.166–4.058；PI 0.960–4.928）的預測區間跨進了「臨床上沒有差別」的區間，跟 CI 的結論不同，所以系統自動判為 **`Some concerns`**。
+- **看到什麼**：整個網絡的 τ² = 0.000。雖然部分比較的 I² = 0.0%，但 **`DrugA:DrugB`**（95% CI `0.377–0.900`；95% PI `0.329–1.030`）和 **`DrugC:Placebo`**（CI `1.166–4.058`；PI `0.960–4.928`）的 95% PI **跨過了無效線 `1`**（進入臨床上沒有差別的區間），改變了原本 CI 完全落在無效線同一側的結論，所以系統自動判為 **`Some concerns`**。
 - **重要提醒（Reset 陷阱）**：門檻 `1.25` 旁邊的 **`Reset`**（下圖紅框處）和 Imprecision 頁面共用同一個設定。**按下去並確認後，Imprecision 的門檻也會一起被清掉。**
 
 ![Heterogeneity 上方設定區，可點 View 對照同類研究的異質性（τ²）參考範圍並留意 Reset 連動](/images/blog/cinema-upload-tutorial/08-heterogeneity.png)
@@ -395,9 +419,16 @@ id,t1,y1,sd1,n1,t2,y2,sd2,n2,rob,indirectness
 | 提示同一研究的 `rob` 或 `indirectness` 不一致 | 多臂試驗或 wide 格式中，同一 `id` 的多列填了不同數字 | 在 Excel 依 `id` 排序檢查，確保同一 `id` 的每一列都相同 |
 | 按 `Set up your evaluation` 後運算失敗 | 網絡沒有完全連通（有斷開），或出現 `n = 0`、`r > n` | 回 `Configuration` 檢查網絡圖是否連成一體，以及數值範圍是否合理 |
 | 跳出 `sensitivity analysis not possible ... server_busy` | 主分析與敏感度分析同時送出，伺服器忙碌；或排除中高偏誤研究後，剩下的 Low risk 研究無法連成網絡 | 按 `OK`，只要 `Proceed` 有正常出現，就能繼續主分析。如果需要敏感度分析的表格，等 5–10 秒後點 `Reset your evaluation` 重跑即可 |
-| 回到 `Imprecision` 發現門檻歸零 | 在 `Heterogeneity` 或 `Incoherence` 誤按門檻旁的 `Reset` | 這三頁共用同一個門檻，回 `Imprecision` 重新輸入並按 `Set` 即可 |
+| 回到 `Imprecision` 發現門檻被重設回預設值 | 在 `Heterogeneity` 或 `Incoherence` 誤按門檻旁的 `Reset` | 這三頁共用同一個門檻（重設後 OR/RR 回到 `1`，MD/SMD 回到 `0`），回 `Imprecision` 重新輸入並按 `Set` 即可 |
 | 匯出的 `Report.csv` 全部都是 `High` | 忘了在 `Report` 勾選黃、紅格的核取方塊並更改 `Confidence rating` | 回 `Report` 勾選降級理由、修改評級後重新下載 |
 | 重開瀏覽器後專案不見了 | 清除了瀏覽器暫存資料，或改用無痕視窗、換了電腦 | CINeMA 只把資料暫存在 `localStorage`，平時一定要匯出 `.cdb` 或 `.cnm` |
+
+## 延伸閱讀與三部曲回顧
+
+還沒完成前面資料整理與模型建立的讀者，可以回頭參考同系列前兩篇：
+
+- 第 1 篇（貝氏／頻率學派模型與統合迴歸）：[MetaInsight v7.1.1 資料上傳教學：從 Excel 到網路統合分析](/blog/metainsight-upload-tutorial/)
+- 第 2 篇（多結果並排、遞移性檢查與匯入本篇報告上色）：[NMAstudio 2.0 資料上傳教學：從 Excel 到互動式網路統合分析](/blog/nmastudio-upload-tutorial/)
 
 ## 參考資料
 

@@ -1,19 +1,39 @@
 ---
-title: MetaInsight 資料上傳教學：從 Excel 到網路統合分析
-description: 手把手整理 long／wide 格式資料並上傳到 MetaInsight（v7.1.1），附可直接複製的範例 CSV、Excel 整理技巧與常見錯誤排除。
+title: MetaInsight v7.1.1 資料上傳教學：從 Excel 到網路統合分析
+description: MetaInsight v7.1.1 怎麼上傳資料？手把手示範 Excel 整理 long／wide 格式 CSV、欄位規則、對照組與排序方向設定，附 4 份範例檔與常見錯誤排除。
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [實證醫學, 網路統合分析, 研究方法]
+tags: [MetaInsight, 網路統合分析, 實證醫學, 研究方法]
 draft: false
+faq:
+  - q: '為什麼打開 MetaInsight 網址會出現 404 Page not found？'
+    a: '因為 MetaInsight v7.1.1 官方網址的結尾必須加上斜線，完整網址為 https://crsu-metainsight.le.ac.uk/MetaInsight/。少了結尾斜線就會回傳 404 錯誤。'
+  - q: 'MetaInsight 支援直接上傳 Excel（.xlsx）檔，還是一定要轉成 CSV？'
+    a: 'MetaInsight v7.1.1 已支援直接上傳 .xlsx 檔，但在台灣中文版 Excel 中仍建議另存為 CSV UTF-8（逗號分隔）格式，可避免隱藏格式或讀錯工作表的問題。'
+  - q: 'Long 格式和 Wide 格式該選哪一種？MetaInsight 最多支援幾臂試驗？'
+    a: '若納入的研究包含三臂以上試驗，或有較多研究層級共變數，建議優先使用一列一個治療臂的 Long 格式；若全是兩臂試驗且習慣左右核對人數，可使用 Wide 格式。MetaInsight 目前單篇試驗最多支援 6 臂（Wide 格式到 .6）。'
+  - q: 'MetaInsight 遇到 0 事件（zero events）該怎麼處理？貝氏分析也能手動加 0.5 嗎？'
+    a: '若僅執行頻率學派（netmeta）分析且單臂事件數為 0，可依官網提醒在 Excel 手動對該研究每一臂的 R 加 0.5、N 加 1；但若要同時執行貝氏（gemtc）分析，二項分佈模型需要整數事件數，手動改成小數可能導致模型報錯或偏離貝氏原始做法。雙臂皆為 0 事件的研究通常不納入相對效應估計，建議先上傳原始整數觀察 Log window，並視情況進行敏感度分析。'
+  - q: '為什麼選完檔案卻只看到預設範例資料，或治療排序結果完全相反？'
+    a: '選完檔案並等到紅色進度條顯示 Upload complete 後，必須再點擊下方藍色的 Load data 按鈕才會真正載入資料。若治療排序完全相反，通常是 Configure analysis 中 For treatment rankings, ORs less than 1 are 的方向選反，療效指標（OR 越大越好）應從預設的 Desirable 改選為 Undesirable。'
 ---
 
-如果你已經會用 RevMan 或 R 做傳統的成對統合分析（pairwise meta-analysis），第一次做網路統合分析（network meta-analysis, NMA）時，最常卡關的通常不是統計模型，而是「檔案一上傳就報錯」。
+**MetaInsight v7.1.1 的標準上傳流程是：在 Excel 整理固定大小寫欄名的 Long 或 Wide CSV → 開啟結尾帶 `/` 的官方網址進入 `Setup` → 選完檔案再按藍色 `Load data` 載入 → 在 `Configure analysis` 設定對照組與排序方向。** 如果你已經會用 RevMan 或 R 做傳統的成對統合分析（pairwise meta-analysis），第一次做網路統合分析（network meta-analysis, NMA）時，最常卡關的通常不是統計模型，而是「檔案一上傳就報錯」。
 
-這篇以台灣臨床醫師與研究生最常用的 **MetaInsight** 為例，介面以 2026 年 6 月更新的 v7.1.1 為準。
+> **免費線上 NMA 工具三部曲（第 1 篇）**：本系列整理三套臨床研究最常用的免費線上工具。本篇先用 **MetaInsight v7.1.1** 跑統計模型（強項是貝氏 MCMC 與統合迴歸）；第 2 篇用 [NMAstudio 2.0](/blog/nmastudio-upload-tutorial/) 並排比較多結果互動圖表；第 3 篇用 [CINeMA 3.0.1](/blog/cinema-upload-tutorial/) 完成 GRADE 證據可信度評級。
 
-網址是 `https://crsu-metainsight.le.ac.uk/MetaInsight/`。**結尾一定要有斜線 `/`**，少了會出現 404。
+這篇以台灣臨床醫師與研究生最常用的 **MetaInsight** 為例，介面以 2026 年 6 月更新的 v7.1.1 為準。官方網址是 [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/)，**結尾一定要有斜線 `/`**，少了會出現 404。
 
 本文只談三件事：在 Excel 整理資料、轉存成 CSV、上傳後確認資料讀對了。圖表怎麼判讀，之後另寫一篇。
+
+## 重點整理
+
+- **網址結尾必加 `/`**，否則會出現 404；若 v7.1.1 伺服器忙碌，可暫用過渡備援站。
+- **表頭大小寫完全固定**：治療名稱只能使用英文字母、數字與底線 `_`，不可有空白、連字號 `-` 或中文。
+- **優先選用 Long 格式**：多臂試驗（最多支援 6 臂）最不容易填錯；雖可吃 `.xlsx`，仍建議存成 CSV UTF-8。
+- **選完檔案一定要按藍色 `Load data`**：等進度條顯示 `Upload complete` 後再按一次，資料才會真正載入。
+- **排序方向別選反**：`ORs less than 1 are` 預設為 `Desirable`（適合副作用），若是「止痛有效」這類越大越好的結果，記得改選 `Undesirable`。
 
 ## MetaInsight 是什麼？適合誰用？
 
@@ -37,7 +57,7 @@ MetaInsight 是英國萊斯特大學（University of Leicester）複雜系統評
 - 治療名稱和多臂試驗（multi-arm trial）的欄位格式要求很嚴格。
 - 免費的線上伺服器在很多人同時使用時，偶爾會變慢。
 
-> **版本提醒：** MetaInsight 主站已改版為 v7.1.1（2026-06-17 更新），和網路上許多舊教學截圖的 v5／v6 介面不同。舊版暫時保留在 `https://crsu.shinyapps.io/MetaInsight_V6/`。操作請以 v7.1.1 為準。
+> **版本提醒：** MetaInsight 主站已改版為 v7.1.1（2026-06-17 更新），和網路上許多舊教學截圖的 v5／v6 介面不同。舊版暫時保留在 [https://crsu.shinyapps.io/MetaInsight_V6/](https://crsu.shinyapps.io/MetaInsight_V6/)。操作請以 v7.1.1 為準。
 
 ## 開始前：先萃取好哪些資料？
 
@@ -61,7 +81,7 @@ MetaInsight 支援兩種排法，用哪一種都可以：
 | --- | --- | --- |
 | Binary, long（一列一個治療臂） | `Study, T, R, N` | 多臂試驗最不容易填錯，最推薦 |
 | Binary, wide（一列一篇研究） | `Study, T.1, R.1, N.1, T.2, R.2, N.2, ...` | 最多到 `.6`（六臂試驗） |
-| Continuous, long（一列一個治療臂） | `Study, T, N, Mean, SD` | 連續結果首選 |
+| Continuous, long（一列一個治療臂） | `Study, T, Mean, SD, N` | 連續結果首選（系統依欄名辨識，欄位順序不限） |
 | Continuous, wide（一列一篇研究） | `Study, T.1, Mean.1, SD.1, N.1, T.2, ...` | 兩臂研究的 `.3` 欄位留白 |
 
 ## 欄位定義總表
@@ -173,17 +193,18 @@ MetaInsight v7.1.1 已經可以直接上傳 `.xlsx`。不過在台灣中文版 E
 1. **一次清理所有治療名稱**：用 Excel 的「尋找與取代」，把空白、連字號（`-`）、斜線（`/`）、括號換成底線 `_` 或直接刪掉。例如 `Oral-NSAID` 改成 `Oral_NSAID`。治療名稱不要用中文。
 2. **同一篇研究不能有兩臂同名**：MetaInsight **不接受同一篇研究裡有兩臂是相同治療**。如果某試驗比較同一藥物的低劑量和高劑量，命名時就要分開，例如 `Drug_10mg` 和 `Drug_20mg`。不然就要先依研究計畫把這兩臂合併。
 3. **寬格式裡兩臂試驗的填法**：兩臂研究的 `T.3`、`R.3`、`N.3` 完全留白，不要填 `NA` 或 `-`。存檔前確認每一列的欄數都對齊。
-4. **0 事件（zero events）怎麼處理**：官網在 Binary Long 的說明裡提醒：`N.B. Continuity corrections will need to be applied to cells containing 0 values`，也就是含 0 的格子要先做連續性校正（continuity correction）。
-   - 如果只有某一臂事件數是 `0`：上傳前在 Excel 手動做標準的 `0.5` 校正，該研究**每一臂的 `R` 加 `0.5`、`N` 加 `1`**。
-   - 如果兩臂事件數都是 `0`：依一般統合分析的原則，這篇通常不納入相對效應的估計。
-   - 註：MetaInsight 內建的二元範例檔 `MetaInsight_binary_long.csv` 仍有一筆 `R=0`。上傳後請務必到分析結果和 Log window 再確認一次。
+4. **0 事件（zero events）怎麼處理**：官網在 Binary Long 的說明裡提醒：`N.B. Continuity corrections will need to be applied to cells containing 0 values`，也就是含 0 的格子要留意連續性校正（continuity correction）。處理方式需依你要跑的模型區分：
+   - **僅執行頻率學派（Frequentist / `netmeta`）且只有單臂為 `0`**：可在上傳前於 Excel 手動做標準的 `0.5` 校正，將該研究**每一臂的 `R` 加 `0.5`、`N` 加 `1`**。不過固定加 `0.5` 在罕見事件或兩組人數懸殊時可能引入偏誤，建議另外做敏感度分析確認結果穩定。
+   - **要同時執行貝氏（Bayesian / `gemtc`）分析**：二項分佈模型預期接收整數事件數，手動把 `R` 改成 `0.5` 這類小數可能導致模型報錯或偏離貝氏原始做法，建議先上傳原始整數並觀察 Log window 的訊息。
+   - **兩臂事件數都是 `0`**：依一般統合分析原則，這篇研究通常不會納入相對效應的估計。
+   - 註：MetaInsight 內建的二元範例檔 `MetaInsight_binary_long.csv` 仍有一筆 `R=0`。上傳後請務必到分析結果與 Log window 再確認一次。
 5. **想對照官方模板？** 到 `Setup` → `Load data`，選好結果類型和格式後，點左下角 `Download example data`，就能下載對應的官方範例 CSV。共四種：continuous long/wide、binary long/wide。
 
 ## 逐步上傳與設定
 
 ### 步驟 1：打開首頁，切到 Setup
 
-1. 用瀏覽器打開 `https://crsu-metainsight.le.ac.uk/MetaInsight/`（確認網址最後有 `/`）。
+1. 用瀏覽器打開 [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/)（確認網址最後有 `/`）。
 2. 第一次開啟如果跳出 GDPR 隱私權視窗，點 `Accept`。
 3. 點頂部導覽列的 `Setup`。
 
@@ -231,7 +252,7 @@ MetaInsight v7.1.1 已經可以直接上傳 `.xlsx`。不過在台灣中文版 E
 4. 確認後，點最下方的 `Configure analysis` 按鈕。
 
 ![Configure analysis 設定面板，紅框標示對照組選擇、排序好壞方向設定與 Configure analysis 按鈕](/images/blog/metainsight-upload-tutorial/05-configure-analysis.png)
-*依臨床意義確認 OR < 1 是 Desirable 還是 Undesirable，再點下方按鈕。*
+*圖為剛進入頁面時的預設狀態（`Desirable`）。本範例結果為止痛有效人數，操作時記得手動改選 `Undesirable` 再按下方按鈕。*
 
 ## 上傳後怎麼確認資料讀對了？
 
@@ -242,34 +263,33 @@ MetaInsight v7.1.1 已經可以直接上傳 `.xlsx`。不過在台灣中文版 E
    - 三臂試驗沒有少列，也沒有多出空白列。
    - `covar.` 開頭的共變數，在同一篇研究的每一臂數值都一樣。
 2. **看 Summary 摘要與網絡圖**：
-   - 點頂部 `Summary` → `Characterise the data` → `Generate tables`，核對研究數和治療數。
-   - 再到 `Summary` → `Network plots` → `Generate plots`，確認所有治療節點連成一個完整的網絡（connected network）。如果大小寫打錯（例如 `Placebo` 和 `placebo`），同一個治療會被拆成兩個互不相連的節點。
-
-<!-- 截圖待補：Summary -> Characterise the data 資料摘要表與 Summary -> Network plots 網絡圖（實測期間 v7.1.1 線上伺服器於點擊 Configure analysis 後持續停留在「Configuring analysis...」並回傳 configured_data 錯誤） -->
+   - 點頂部導覽列的 `Summary` → `Data characteristics`，檢視資料摘要表並核對納入的研究數與治療種類是否正確。
+   - 再到 `Summary` → `Network plot`，確認所有治療節點連成一個完整的網絡（connected network）。如果大小寫打錯（例如 `Placebo` 和 `placebo`），同一個治療會被拆成兩個互不相連的節點。
 
 資料都確認無誤後，就可以依需求點頂部的分頁開始分析：
 
 - `Frequentist`：森林圖、League table、不一致性檢定。
 - `Bayesian`：MCMC 模擬、SUCRA 排序、節點分裂法（node-splitting）。
 - `Covariate`：如果有上傳 `covar.<名稱>` 欄，可以在這裡做統合迴歸。
+- `Export`：若有整理 `rob` 與 `indirectness` 欄位，可從這裡匯出 `.json` 等資料，後續搭配 `cinemar` 套件轉檔匯入 CINeMA。
 
 ## 常見錯誤排除
 
 | 遇到的狀況 | 常見原因 | 解決方式 |
 | --- | --- | --- |
-| 打開官網顯示 `404 Page not found` | 網址最後少了斜線 `/` | 改用完整網址 `https://crsu-metainsight.le.ac.uk/MetaInsight/` |
+| 打開官網顯示 `404 Page not found` | 網址最後少了斜線 `/` | 改用完整網址 [https://crsu-metainsight.le.ac.uk/MetaInsight/](https://crsu-metainsight.le.ac.uk/MetaInsight/) |
 | 上傳後 Log window 顯示治療名稱錯誤 | 治療名稱有空白、中文、連字號 `-` 或特殊符號 | 在 Excel 把 `T` 欄全部改成只有英數和底線 `_`（如 `Oral_NSAID`） |
 | 錯誤訊息說有重複的治療臂 | 同一篇研究有兩列的 `T` 名稱相同 | 用劑量區分命名（如 `Drug_Low`、`Drug_High`），或先合併這兩臂的數據 |
 | 找不到欄位或讀不到共變數 | 欄位名稱大小寫錯（如 `study`、`mean`），或少了 `covar.` 前綴 | 照定義表改表頭：`Study`、`T`、`R`、`N`、`Mean`、`SD`、`covar.age` |
 | 載入後無法分析，或只看到預設資料 | 選完檔案忘了按藍色 `Load data` 按鈕 | 等紅色進度條顯示 `Upload complete` 後，再按 `Load data` |
 | 超過 6 臂的試驗報錯 | MetaInsight 目前一篇試驗最多 6 臂 | 確認臂數不超過 6，或依臨床定義合併相近的劑量組 |
-| 按 `Configure analysis` 後一直轉圈 | v7.1.1 線上伺服器偶爾 SockJS 連線中斷，或後端太忙 | 重新整理頁面再試，或暫時改用官網公告的舊版 `https://crsu.shinyapps.io/MetaInsight_V6/` |
+| 按 `Configure analysis` 後一直轉圈 | v7.1.1 線上伺服器偶爾 SockJS 連線中斷，或後端太忙 | 重新整理頁面再試，或暫時改用官網公告的舊版 [https://crsu.shinyapps.io/MetaInsight_V6/](https://crsu.shinyapps.io/MetaInsight_V6/) |
 
 ## 延伸閱讀與工具選擇
 
-如果你想用同一份資料**同時比較兩個結果（例如療效和副作用），並直接套用 CINeMA 證據等級上色**，可以接著看下一篇：[NMAstudio 資料上傳教學：從 Excel 到互動式網路統合分析](/blog/nmastudio-upload-tutorial/)。
+如果你想用同一份資料**同時比較兩個結果（例如療效和副作用），並整合證據等級上色**，可以接著看第 2 篇：[NMAstudio 2.0 資料上傳教學：從 Excel 到互動式網路統合分析](/blog/nmastudio-upload-tutorial/)；需要進行完整的 **GRADE 證據確定性評估**，則看第 3 篇：[CINeMA 3.0.1 上傳教學：評估網路統合分析 GRADE 證據可信度](/blog/cinema-upload-tutorial/)。
 
-簡單說：**MetaInsight 的強項是內建貝氏 MCMC 模型和共變數統合迴歸；NMAstudio 2.0 則擅長同時呈現多個結果，並整合 CINeMA。**
+簡單區分三套工具的分工：**MetaInsight 強項是內建貝氏 MCMC 模型與共變數統合迴歸；NMAstudio 2.0 擅長同時呈現多個結果與遞移性視覺檢查；CINeMA 3.0.1 則專責六個面向的證據可信度評級。**
 
 ## 參考資料
 
