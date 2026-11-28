@@ -1,13 +1,29 @@
 ---
-title: 'CINeMA Upload Tutorial: Rating Confidence in a Network Meta-Analysis Step by Step'
-description: From preparing the rob and indirectness columns and uploading a CSV, to working through all six domains and exporting the report. Includes example data and screenshots.
+title: 'CINeMA 3.0.1 Upload Tutorial: Rating NMA Evidence Confidence (GRADE)'
+description: 'Step-by-step CINeMA 3.0.1 (cinema.med.auth.gr) guide: prepare rob and indirectness CSVs, interpret the contribution matrix and all six GRADE-based domains, and export reports to NMAstudio.'
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [Evidence-based medicine, Network meta-analysis, GRADE, Research methods]
+tags: [CINeMA, Network meta-analysis, GRADE, Evidence-based medicine, Research methods]
 draft: false
+faq:
+  - q: 'What is the current CINeMA URL, do I need an account, and are my data saved?'
+    a: 'The old URL cinema.ispm.unibe.ch now redirects to https://cinema.med.auth.gr/. CINeMA is free and requires no login, but projects are stored only in your browser localStorage. Always export a .cdb or .cnm backup from Projects when you finish.'
+  - q: 'Are rob and indirectness required when uploading a CSV to CINeMA 3.0.1, and how are they coded?'
+    a: 'Although the 3.0.0 release notes list rob as optional, the front-end validator in CINeMA 3.0.1 still requires the rob column before an upload succeeds, and including indirectness is recommended. Both are coded per study id using 1/2/3 or L/M/H (low, moderate/some concerns, high), and no cell in the CSV may be left empty.'
+  - q: 'Does having no direct head-to-head trial (indirect-only evidence) count as Indirectness?'
+    a: 'No. Indirectness assesses whether the included studies PICO elements depart from your review question, regardless of whether two treatments are directly connected in the network plot. Uncertainty from relying solely on indirect evidence is reflected in Imprecision and Incoherence instead.'
+  - q: 'How does CINeMA judge No concerns, Some concerns and Major concerns for Imprecision?'
+    a: 'CINeMA evaluates the 95% confidence interval against both the line of no effect (such as OR = 1) and the range of equivalence (e.g. 0.800 to 1.250): if the 95% CI lies entirely on one side of the line of no effect or falls completely inside the equivalence range, it is rated No concerns; if it crosses the line of no effect and extends into one clinically important threshold, it is rated Some concerns; if it crosses both thresholds (compatible with clinically important benefit and harm), it is rated Major concerns.'
+  - q: 'Why can Heterogeneity be rated Some concerns even when the network tau-squared is 0?'
+    a: 'Because the 95% prediction interval (PI) uses a t-distribution with fewer degrees of freedom rather than the normal z = 1.96 used for the 95% CI, the PI is wider even when tau-squared = 0.000. Whenever the 95% PI crosses the line of no effect or threshold and alters the clinical conclusion from the 95% CI, CINeMA rates it Some concerns.'
+  - q: 'Why is every row in my exported Report.csv rated High, and how do I import it into NMAstudio?'
+    a: 'CINeMA sets every Confidence rating to High by default on the Report page. You must tick the checkboxes inside the yellow and red cells to populate Reason(s) for downgrading and manually change the Confidence rating drop-down before clicking Download Report. You can then upload this CSV under the CINeMA tab in NMAstudio 2.0 to colour the league table.'
 ---
 
-This is the third post in my series on free online tools for network meta-analysis (NMA). The first post used [MetaInsight](/en/blog/metainsight-upload-tutorial/) to fit the statistical models, and the second used [NMAstudio](/en/blog/nmastudio-upload-tutorial/) to draw interactive plots. This post covers the last step before submission: using **CINeMA (Confidence in Network Meta-Analysis)** to rate the confidence in the evidence for each treatment comparison.
+**To use CINeMA 3.0.1 (current URL: [https://cinema.med.auth.gr/](https://cinema.med.auth.gr/)): prepare a CSV with `rob` and `indirectness` and no empty cells, create a Collection and upload the file, set the model under Configuration, work through the six GRADE-based domains using the contribution matrix, then tick reasons for downgrading and set final ratings on the Report page before exporting CSV and `.cdb`/`.cnm` backups.** This is the third post in my series on free online tools for network meta-analysis (NMA). The first post used [MetaInsight v7.1.1](/en/blog/metainsight-upload-tutorial/) to fit the statistical models, and the second used [NMAstudio 2.0](/en/blog/nmastudio-upload-tutorial/) to draw interactive plots. This post covers the last step before submission: using **CINeMA (Confidence in Network Meta-Analysis)** to rate the confidence in the evidence for each treatment comparison.
+
+> **Free Online NMA Tools Trilogy (Part 3):** Part 1 ([MetaInsight v7.1.1](/en/blog/metainsight-upload-tutorial/)) handles statistical modelling and Bayesian analysis; Part 2 ([NMAstudio 2.0](/en/blog/nmastudio-upload-tutorial/)) handles multi-outcome comparisons and visual transitivity checks; Part 3 (this post, **CINeMA 3.0.1**) handles six-domain GRADE confidence ratings that can be imported back into NMAstudio.
 
 CINeMA was developed at ISPM, University of Bern, and is the official tool Cochrane recommends for rating the certainty of NMA evidence. Note that **the old address `https://cinema.ispm.unibe.ch/` now redirects to [https://cinema.med.auth.gr/](https://cinema.med.auth.gr/)**. All screenshots and tests in this post use the current version, CINeMA 3.0.1.
 
@@ -15,6 +31,14 @@ The three tools work together:
 
 - The `.csv` report you export from CINeMA at the end can be uploaded back into NMAstudio, which then colours the league table by confidence rating.
 - The new CINeMA can also import the `.json` file exported from MetaInsight. You first convert it to a `.cnm` file with the official `cinemar` R package.
+
+## Key points
+
+- **Updated URL**: the legacy `cinema.ispm.unibe.ch` address redirects to `cinema.med.auth.gr`.
+- **Browser-only storage**: no login is needed, but projects live only in `localStorage`—always export a `.cdb` or `.cnm` backup.
+- **No empty cells and `rob` required**: any blank cell rejects the upload, and the 3.0.1 front-end validator still checks for `rob` (use `1/2/3`).
+- **Avoid `Reset` on Heterogeneity**: `Imprecision`, `Heterogeneity` and `Incoherence` share the same clinical threshold; clicking `Reset` clears it across all three tabs.
+- **Downgrade manually on `Report`**: every row defaults to `High`; tick the yellow/red checkboxes and adjust the `Confidence rating` drop-downs before downloading.
 
 ## What is CINeMA? How it relates to GRADE, and the six domains
 
@@ -24,12 +48,12 @@ The difference is that every NMA estimate mixes direct and indirect evidence. So
 
 | Domain | The question to ask | Labels used by the software |
 | --- | --- | --- |
-| 1. Within-study bias | Could the risk of bias in the included studies affect the result? | Low risk／Some concerns／High risk |
-| 2. Reporting bias | Is there publication bias or selective reporting? | Low risk／Some concerns／High risk |
-| 3. Indirectness | Do the studies' PICO elements differ from the clinical question your review asks? | No concerns／Some concerns／Major concerns |
-| 4. Imprecision | Does the 95% confidence interval (CI) cross a clinically important threshold? | No concerns／Some concerns／Major concerns |
-| 5. Heterogeneity | Once between-study differences are taken into account (via the 95% prediction interval), does the conclusion change? | No concerns／Some concerns／Major concerns |
-| 6. Incoherence | Do the direct and indirect evidence point to conflicting conclusions? | No concerns／Some concerns／Major concerns |
+| 1. Within-study bias | Could the risk of bias in the included studies affect the result? | Low risk / Some concerns / High risk |
+| 2. Reporting bias | Is there publication bias or selective reporting? | Low risk / Some concerns / High risk |
+| 3. Indirectness | Do the studies' PICO elements differ from the clinical question your review asks? | No concerns / Some concerns / Major concerns |
+| 4. Imprecision | Does the 95% confidence interval (CI) cross a clinically important threshold? | No concerns / Some concerns / Major concerns |
+| 5. Heterogeneity | Once between-study differences are taken into account (via the 95% prediction interval), does the conclusion change? | No concerns / Some concerns / Major concerns |
+| 6. Incoherence | Do the direct and indirect evidence point to conflicting conclusions? | No concerns / Some concerns / Major concerns |
 
 ## Before you start: what data you need
 
@@ -50,11 +74,11 @@ CINeMA accepts only `.csv` files and supports three layouts: long, wide and inve
 | Binary, wide (one row per comparison) | `id, t1, r1, n1, t2, r2, n2, rob, indirectness` | Trials with three or more arms must be split into several rows |
 | Continuous, long | `id, t, y, sd, n, rob, indirectness` | First choice for continuous outcomes |
 | Continuous, wide | `id, t1, y1, sd1, n1, t2, y2, sd2, n2, rob, indirectness` | Pairwise layout for continuous outcomes |
-| Inverse variance (any outcome) | `id, t1, t2, effect, se, rob, indirectness` | For log OR／log RR／log HR／MD／SMD |
+| Inverse variance (any outcome) | `id, t1, t2, effect, se, rob, indirectness` | For log OR / log RR / log HR / MD / SMD |
 
 ## Column definitions and how to fill in `rob` and `indirectness`
 
-| Column | Meaning | Type／values | Required／optional |
+| Column | Meaning | Type / values | Required / optional |
 | --- | --- | --- | --- |
 | `id` | Study ID (must be the same on every row of a study) | Plain numbers recommended | Required |
 | `t` (`t1`, `t2`) | Treatment name (short and alphanumeric; avoid spaces and special characters) | Text or number | Required |
@@ -248,7 +272,7 @@ In plain terms, there are no head-to-head trials of `DrugA vs DrugC`. About half
 
 ### 1. Within-study bias
 
-- **What to do／what to choose**: The page shows the overall risk of bias distribution (in this example, 7 studies: `3 Low`, `3 Moderate`, `1 High`) and a stacked bar chart weighted by contribution percentage. In the rule menu, choose **`Majority RoB`** (the others are `Average RoB` and `Highest RoB`), then click **`Proceed`**.
+- **What to do / what to choose**: The page shows the overall risk of bias distribution (in this example, 7 studies: `3 Low`, `3 Moderate`, `1 High`) and a stacked bar chart weighted by contribution percentage. In the rule menu, choose **`Majority RoB`** (the others are `Average RoB` and `Highest RoB`), then click **`Proceed`**.
 - **What you see**: `DrugC:Placebo` is more than half red and is rated `High risk`; `DrugB:DrugC` is more than half green and is rated `Low risk`; the other 4 comparisons are `Some concerns`.
 - **Common mistakes**: With `Highest RoB`, any comparison whose evidence includes even 1 high-risk study is rated red, which easily leads to rating down too much.
 
@@ -260,7 +284,7 @@ In plain terms, there are no head-to-head trials of `DrugA vs DrugC`. About half
 
 ### 2. Reporting bias
 
-- **What to do／what to choose**: First click **`Set all Low risk`**, then change the drop-down on the card of any comparison where you suspect publication bias. (CINeMA 3.0.1 has replaced the old `undetected / suspected` labels with `Low risk / Some concerns / High risk`.) If you have assessed reporting bias with ROB-MEN, you can also click **`Upload table ROB-MEN`** to import its Table 2 CSV directly (it must have `comparison`, `treat1`, `treat2` and `final` columns). Click **`Proceed`** when done.
+- **What to do / what to choose**: First click **`Set all Low risk`**, then change the drop-down on the card of any comparison where you suspect publication bias. (CINeMA 3.0.1 has replaced the old `undetected / suspected` labels with `Low risk / Some concerns / High risk`.) If you have assessed reporting bias with ROB-MEN, you can also click **`Upload table ROB-MEN`** to import its Table 2 CSV directly (it must have `comparison`, `treat1`, `treat2` and `final` columns). Click **`Proceed`** when done.
 - **What you see**: After the bulk setting, 6 comparison cards appear, and you can adjust each one.
 - **Common mistakes**: If you skip this page without clicking any setting button, you won't be able to complete the report.
 
@@ -276,7 +300,7 @@ In plain terms, there are no head-to-head trials of `DrugA vs DrugC`. About half
 
 ### 3. Indirectness
 
-- **What to do／what to choose**: Review the indirectness distribution (`5 low`, `2 moderate`) and the bar chart, choose the **`Majority`** rule (the others are `Average` and `Highest`), then click **`Proceed`**.
+- **What to do / what to choose**: Review the indirectness distribution (`5 low`, `2 moderate`) and the bar chart, choose the **`Majority`** rule (the others are `Average` and `Highest`), then click **`Proceed`**.
 - **What you see**: `DrugB:DrugC` and `DrugC:Placebo` are `Some concerns`; the other 4 comparisons are `No concerns`.
 - **Common mistakes**: Treating "no direct comparison" (such as `DrugA:DrugC`) as indirectness. The uncertainty that comes from relying only on indirect evidence shows up under Imprecision, not here.
 
@@ -288,27 +312,27 @@ In plain terms, there are no head-to-head trials of `DrugA vs DrugC`. About half
 
 ### 4. Imprecision
 
-- **What to do／what to choose**: In **`Define clinically important size of effect: Odds ratio`**, enter the smallest effect you consider clinically important, click **`Set`**, then click **`Proceed`**. There is no standard value for this threshold; decide it in advance based on clinical expertise. This example uses **`1.25`**.
-- **What you see**: The software automatically calculates the reciprocal, **`0.800`**, so the range of "no clinically important difference" is `0.800–1.250`. For the first 5 comparisons, the 95% CI stays on one side of the threshold (the card says `does not cross clinically important effect`), so they are `No concerns`. Only the indirect-only comparison **`DrugA:DrugC`** (OR 1.392, 95% CI 0.700–2.768) crosses both `0.800` and `1.250`, so it turns red as **`Major concerns`**.
+- **What to do / what to choose**: In **`Define clinically important size of effect: Odds ratio`**, enter the smallest effect you consider clinically important, click **`Set`**, then click **`Proceed`**. There is no standard value for this threshold; decide it in advance based on clinical expertise. This example uses **`1.25`**.
+- **What you see**: The software automatically calculates the reciprocal, **`0.800`**, so the range of equivalence ("no clinically important difference") is `0.800–1.250`. For the first 5 comparisons, the 95% CI lies **entirely on one side of the line of no effect (`OR = 1`)** (for instance `0.377–0.900` for `DrugA:DrugB` is wholly below 1, and `1.166–4.058` for `DrugC:Placebo` is wholly above 1). Even where one end enters `0.800–1.250`, not crossing `1` leaves the clinical direction unambiguous, so the card says `does not cross clinically important effect` and rates them `No concerns`. Only the indirect-only comparison **`DrugA:DrugC`** (OR 1.392, 95% CI `0.700–2.768`) crosses `1` as well as both `0.800` and `1.250`, so it turns red as **`Major concerns`**.
 - **Common mistakes**: Clicking Set with the default value `1`, which means no "no difference" range at all. Another mistake is entering 1.25 for a continuous outcome (MD) instead of converting it to the minimal clinically important difference (MCID) for that scale.
 
 ![The Imprecision page with the clinically important threshold set to 1.25 and the confidence interval of each comparison judged automatically](/images/blog/cinema-upload-tutorial/07-imprecision.png)
 
-*After entering `1.25` in the red box and clicking `Set`, you can see that the 95% CI of the indirect-only comparison `DrugA:DrugC` crosses the thresholds on both sides, so it is marked red as `Major concerns`.*
+*After entering `1.25` in the red box and clicking `Set`, the first five comparisons remain green because none cross the line of no effect (`OR = 1`), whereas `DrugA:DrugC` crosses both thresholds and is marked red as `Major concerns`.*
 
-> **Rule of thumb**: If the 95% CI crosses the clinical threshold on one side, rate `Some concerns`. If it crosses both sides (covering both clinically important benefit and harm), rate `Major concerns`.
+> **Rule of thumb**: If the 95% CI lies entirely on one side of the line of no effect (`OR = 1`) or falls completely within the range of equivalence, rate `No concerns`. If it crosses the line of no effect and extends into one clinically important threshold, rate `Some concerns`. If it crosses both thresholds (covering both clinically important benefit and harm), rate `Major concerns`.
 
 ### 5. Heterogeneity
 
 First, two terms:
 
 - **τ² (tau-squared)**: the between-study variance. The larger it is, the more the study results differ from each other.
-- **95% prediction interval (PI)**: the range in which the true effect of a new study is likely to fall. It also includes between-study variation, so it is usually wider than the 95% CI.
+- **95% prediction interval (PI)**: the range in which the true effect of a new study is likely to fall. It includes between-study variation and uses a t-distribution with fewer degrees of freedom (rather than the normal z = 1.96 used for the 95% CI), so **even when the network τ² = 0, the 95% PI is still wider than the 95% CI**.
 
 How to use the page:
 
-- **What to do／what to choose**: This page automatically reuses the `0.800–1.250` range from the previous step, and the input box is locked. Below it is an optional **`Select type of intervention and outcome`**. Choose the type of intervention and outcome and click **`View`**, and the software lists the typical τ² range seen in similar past studies. This helps you judge whether the between-study variance in your network is small, typical or large. Then click **`Proceed`**.
-- **What you see**: The overall τ² for the network is 0.000. Some comparisons have I² = 0.0%, but for **`DrugA:DrugB`** (95% CI 0.377–0.900; 95% PI 0.329–1.030) and **`DrugC:Placebo`** (CI 1.166–4.058; PI 0.960–4.928), the prediction interval reaches into the "no clinically important difference" range. This gives a different conclusion from the CI, so the software rates them **`Some concerns`**.
+- **What to do / what to choose**: This page automatically reuses the `0.800–1.250` range from the previous step, and the input box is locked. Below it is an optional **`Select type of intervention and outcome`**. Choose the type of intervention and outcome and click **`View`**, and the software lists the typical τ² range seen in similar past studies. This helps you judge whether the between-study variance in your network is small, typical or large. Then click **`Proceed`**.
+- **What you see**: The overall τ² for the network is 0.000. Some comparisons have I² = 0.0%, but for **`DrugA:DrugB`** (95% CI `0.377–0.900`; 95% PI `0.329–1.030`) and **`DrugC:Placebo`** (CI `1.166–4.058`; PI `0.960–4.928`), the 95% prediction interval **crosses the line of no effect (`OR = 1`)** into the range of equivalence. This changes the conclusion from the 95% CI, so the software rates them **`Some concerns`**.
 - **Important (the Reset trap)**: The **`Reset`** button next to the `1.25` threshold (red box in the image below) shares its setting with the Imprecision page. **If you click it and confirm, the Imprecision threshold is cleared as well.**
 
 ![The Heterogeneity settings area, where you can click View to compare against the typical τ² range of similar studies; note the linked Reset button](/images/blog/cinema-upload-tutorial/08-heterogeneity.png)
@@ -330,7 +354,7 @@ This page checks whether the direct and indirect evidence give conflicting answe
 
 How to use the page:
 
-- **What to do／what to choose**: Nothing to enter. Review the global and local test results, then click **`Proceed`**.
+- **What to do / what to choose**: Nothing to enter. Review the global and local test results, then click **`Proceed`**.
 - **What you see**: The global test (random effects) gives χ² = 1.127 (df = 5, P = 0.952). The SIDE P values for the comparisons range from `0.667` to `0.835`; the indirect-only comparison `DrugA:DrugC` shows `Not applicable`. All comparisons are rated **`No concerns`**.
 
 **What does the SIDE P value mean?** Its null hypothesis is that the direct and indirect evidence show the same treatment effect, that is, ROR = 1. **The smaller the P value, the stronger the statistical evidence that the direct and indirect evidence disagree.** These tests have low statistical power and can easily miss real incoherence, so CINeMA uses a more lenient warning threshold of `P < 0.10` instead of `0.05`.
@@ -395,9 +419,16 @@ Download the report exported in this example: [cinema-example-report.csv](/files
 | Warning that `rob` or `indirectness` is inconsistent within a study | In a multi-arm trial or wide format, rows with the same `id` have different numbers | Sort by `id` in Excel and make sure every row of the same `id` matches |
 | The analysis fails after clicking `Set up your evaluation` | The network is not fully connected, or there is `n = 0` or `r > n` | Go back to `Configuration` and check that the network is connected and the values are in range |
 | `sensitivity analysis not possible ... server_busy` appears | The main and sensitivity analyses were sent at the same time and the server is busy; or, after excluding moderate-to-high risk of bias studies, the remaining Low risk studies no longer form a connected network | Click `OK`. As long as `Proceed` appears, you can continue with the main analysis. If you need the sensitivity analysis table, wait 5–10 seconds and click `Reset your evaluation` to run it again |
-| The threshold is back to zero when you return to `Imprecision` | You clicked `Reset` next to the threshold on `Heterogeneity` or `Incoherence` | These three pages share the same threshold. Go back to `Imprecision`, enter it again and click `Set` |
+| The threshold resets to its default when you return to `Imprecision` | You clicked `Reset` next to the threshold on `Heterogeneity` or `Incoherence` | These three pages share the same threshold (resetting restores `1` for OR/RR and `0` for MD/SMD). Go back to `Imprecision`, enter it again and click `Set` |
 | Every row in the exported `Report.csv` is `High` | You forgot to tick the yellow and red checkboxes and change the `Confidence rating` on `Report` | Go back to `Report`, tick the reasons, change the ratings and download again |
 | The project is gone after reopening the browser | You cleared your browser data, or switched to a private window or another computer | CINeMA only stores data in `localStorage`, so always export a `.cdb` or `.cnm` file |
+
+## Further reading and trilogy recap
+
+If you are starting from data preparation or statistical modelling, check the earlier posts in this series:
+
+- Part 1 (Bayesian/Frequentist models and meta-regression): [MetaInsight v7.1.1 Data Upload Tutorial: From Excel to NMA](/en/blog/metainsight-upload-tutorial/)
+- Part 2 (Multi-outcome league tables, transitivity checks, and importing CINeMA ratings): [NMAstudio 2.0 Data Upload Tutorial: From Excel to Interactive NMA](/en/blog/nmastudio-upload-tutorial/)
 
 ## References
 

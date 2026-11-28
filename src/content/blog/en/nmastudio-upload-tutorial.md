@@ -1,13 +1,25 @@
 ---
-title: 'Uploading Data to NMAstudio: From Excel to an Interactive Network Meta-Analysis'
-description: A step-by-step guide to preparing long, wide or inverse-variance data and uploading it to NMAstudio 2.0, with multi-outcome setup, example CSV files and troubleshooting.
+title: 'NMAstudio 2.0 Data Upload Tutorial: From Excel to Interactive NMA'
+description: How to upload data to NMAstudio 2.0 (uiocloud.no). Step-by-step guide to long, wide and inverse-variance CSV formats, multi-outcome mapping, transitivity checks, CINeMA import and 4 example CSVs.
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [Evidence-based medicine, Network meta-analysis, Research methods]
+tags: [NMAstudio, Network meta-analysis, Evidence-based medicine, Research methods]
 draft: false
+faq:
+  - q: 'Why does nmastudioapp.com return a 503 error, and what is the current NMAstudio 2.0 URL?'
+    a: 'The old domain nmastudioapp.com and its manual link now return 503 errors. Following the 2026 paper, the live NMAstudio 2.0 web application is hosted in Norway at https://nmastudio.uiocloud.no/.'
+  - q: 'Do column names in NMAstudio 2.0 have to be fixed like in MetaInsight?'
+    a: 'Mostly no. On the SETUP page, NMAstudio 2.0 lets you map each variable using drop-down menus, so you can name study IDs, treatments, outcomes and covariates as you wish. Only a few special columns, such as treat_class for node colouring, require fixed names.'
+  - q: 'Can two outcomes (e.g. efficacy and adverse events) share the same sample-size column?'
+    a: 'No. NMAstudio 2.0 requires every drop-down variable to map to a distinct column in your CSV. Even when both outcomes have identical denominators, create separate columns such as n_resp and n_ae. Note also that sample size n is required for continuous and inverse-variance formats in version 2.0.'
+  - q: 'Do I need to apply a 0.5 continuity correction manually for zero events in NMAstudio 2.0?'
+    a: 'No. NMAstudio 2.0 handles zero events automatically: it adds a 0.5 continuity correction when one arm has zero events, and excludes studies with zero events in both arms.'
+  - q: 'When should I choose NMAstudio 2.0 over MetaInsight, and can it import CINeMA ratings?'
+    a: 'Choose MetaInsight for Bayesian MCMC models and covariate meta-regression. Choose NMAstudio 2.0 to compare multiple outcomes side by side, inspect transitivity plots visually, and colour league tables automatically by uploading a Report CSV exported from CINeMA 3.0.1.'
 ---
 
-In a network meta-analysis (NMA), you may want to:
+**NMAstudio 2.0 is hosted at [https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/), and the standard upload workflow is: go to `SETUP` and click the Reset icon to clear the default example, upload your data saved as CSV UTF-8, map overall variables and separate sample-size columns for each outcome via drop-down menus, then select effect modifiers and click `Run Analysis`.** In a network meta-analysis (NMA), you may want to:
 
 - Put the main efficacy outcome and serious adverse events in the same league table
 - Check transitivity, that is, whether the studies behind each comparison are similar enough
@@ -15,9 +27,17 @@ In a network meta-analysis (NMA), you may want to:
 
 If so, **NMAstudio** is a very handy tool.
 
-One thing to know first: the address that older papers and tutorials give, `https://www.nmastudioapp.com/`, and the manual at `http://www.nmastudioapp.com/doc`, both return a 503 error and cannot be reached.
+> **Free Online NMA Tools Trilogy (Part 2):** Part 1 uses [MetaInsight v7.1.1](/en/blog/metainsight-upload-tutorial/) for statistical modelling; Part 2 (this post) uses **NMAstudio 2.0** for multi-outcome side-by-side comparisons and visual transitivity checks; Part 3 uses [CINeMA 3.0.1](/en/blog/cinema-upload-tutorial/) for GRADE-based certainty ratings that you can import back here.
 
-After the team published its 2026 paper, the version that is publicly available is **NMAstudio 2.0**, hosted on a cloud server in Norway: [https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/). This post follows the actual 2.0 interface and my own test runs, and walks you through preparing, uploading and checking your data.
+One thing to know first: the address that older papers and tutorials give, `https://www.nmastudioapp.com/`, and the manual at `http://www.nmastudioapp.com/doc`, both return a 503 error and cannot be reached. After the team published its 2026 paper, the version that is publicly available is **NMAstudio 2.0**, hosted on a cloud server in Norway: [https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/). This post follows the actual 2.0 interface and my own test runs, and walks you through preparing, uploading and checking your data.
+
+## Key points
+
+- **Use the 2.0 URL**: the legacy `nmastudioapp.com` domain returns a 503 error; use `nmastudio.uiocloud.no` instead.
+- **CSV only**: `.xlsx` files are not accepted directly; save your Excel sheet as CSV UTF-8 (Comma delimited).
+- **No shared sample-size columns**: every outcome needs its own `n` column (e.g. `n_resp` and `n_ae`), and `n` is also required for continuous and `iv` formats in 2.0.
+- **`treat_class` colouring works in long format only**: use long format with the fixed column name `treat_class` if you want nodes coloured by drug class.
+- **Zero events are handled automatically**: single-zero studies get a 0.5 continuity correction, and double-zero studies are excluded.
 
 ## What is NMAstudio 2.0, and who is it for?
 
@@ -278,7 +298,7 @@ Once the data look right, use the `Select results to display` drop-down at the t
 - `Ranking`
 - `Consistency & Reporting bias`
 
-If you have already rated the certainty of evidence in the [CINeMA web application](https://cinema.ispm.unibe.ch/), open the **CINeMA** tab at the top and upload one report CSV for each outcome name. The league table is then coloured by certainty of evidence automatically.
+If you have already rated the certainty of evidence in the [CINeMA web application](https://cinema.med.auth.gr/) (see Part 3: [CINeMA 3.0.1 Upload Tutorial](/en/blog/cinema-upload-tutorial/)), open the **CINeMA** tab at the top and upload one report CSV for each outcome name. The league table is then coloured by certainty of evidence automatically.
 
 ![the CINeMA tab, with a separate report upload area for each outcome](/images/blog/nmastudio-upload-tutorial/09-cinema-tab.png)
 *To bring in the certainty ratings for several outcomes, upload the matching CINeMA export for each outcome name here.*
@@ -296,7 +316,7 @@ If you have already rated the certainty of evidence in the [CINeMA web applicati
 
 ## Further reading and tool comparison
 
-If your study needs a **Bayesian NMA** or **meta-regression** on covariates, see the previous post: [Uploading Data to MetaInsight: From Excel to Network Meta-Analysis](/en/blog/metainsight-upload-tutorial/).
+If your study needs a **Bayesian NMA** or **meta-regression** on covariates, see Part 1: [MetaInsight v7.1.1 Data Upload Tutorial: From Excel to NMA](/en/blog/metainsight-upload-tutorial/). To assess **GRADE-based confidence in the evidence** and import ratings back into NMAstudio, continue to Part 3: [CINeMA 3.0.1 Upload Tutorial: Rating NMA Evidence Confidence (GRADE)](/en/blog/cinema-upload-tutorial/).
 
 In one sentence: **MetaInsight is strongest for Bayesian models and meta-regression; NMAstudio 2.0 is strongest for showing several outcomes side by side and bringing in CINeMA certainty ratings.**
 

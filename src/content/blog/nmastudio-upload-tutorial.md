@@ -1,13 +1,25 @@
 ---
-title: NMAstudio 資料上傳教學：從 Excel 到互動式網路統合分析
-description: 一步步把資料整理成 long、wide 或 inverse-variance 格式並上傳到 NMAstudio 2.0，含多結果設定、範例 CSV 與常見錯誤排除。
+title: NMAstudio 2.0 資料上傳教學：從 Excel 到互動式網路統合分析
+description: NMAstudio 2.0（uiocloud.no）怎麼上傳資料？完整教學整理 long、wide 與 inverse-variance CSV、多結果欄位對應、遞移性檢查與匯入 CINeMA，附 4 份範例檔。
 pubDate: 2026-11-25
+updatedDate: 2026-11-28
 category: notes
-tags: [實證醫學, 網路統合分析, 研究方法]
+tags: [NMAstudio, 網路統合分析, 實證醫學, 研究方法]
 draft: false
+faq:
+  - q: '為什麼舊教學的 nmastudioapp.com 連不上出現 503？NMAstudio 2.0 新網址是什麼？'
+    a: '舊版網址 nmastudioapp.com 與說明書連結目前皆回傳 503 無法使用。開發團隊於 2026 年發表論文後，目前公開可用的 NMAstudio 2.0 架設在挪威雲端主機：https://nmastudio.uiocloud.no/。'
+  - q: 'NMAstudio 2.0 欄位名稱需要像 MetaInsight 一樣完全固定嗎？'
+    a: '大部分不需要。NMAstudio 2.0 會在 SETUP 頁面用下拉選單讓你手動對應各欄位角色，所以 Study ID、治療名稱、結果數值與共變數都可以自訂欄名；只有少數特殊欄位（例如治療分類 treat_class）必須使用固定欄名。'
+  - q: '同時分析兩個結果指標（例如療效和副作用）時，可以共用同一個人數欄位嗎？'
+    a: '不行。NMAstudio 2.0 規定下拉選單中的每個變數都必須對應到檔案裡不同的欄位，就算兩個結果的分母人數完全相同，也要拆成兩個欄位（例如 n_resp 和 n_ae）。此外，連續型與反變異數格式也都需要填入各組人數 n。'
+  - q: 'NMAstudio 2.0 遇到 0 事件需要自己手動加 0.5 嗎？'
+    a: '不需要。NMAstudio 2.0 會由系統自動處理：只有一組是 0 事件時會自動加 0.5 進行連續性校正，兩組都是 0 事件的研究則會自動排除。'
+  - q: 'NMAstudio 2.0 和 MetaInsight 該選哪一個？可以跟 CINeMA 串接嗎？'
+    a: '若需要貝氏（Bayesian）模型與統合迴歸，請選 MetaInsight；若需要同時並排比較多個結果、檢查遞移性圖表，並讓 league table 依證據等級自動上色，建議選 NMAstudio 2.0。你可以將 CINeMA 3.0.1 匯出的 Report CSV 直接上傳到 NMAstudio 的 CINeMA 分頁進行上色。'
 ---
 
-做網路統合分析（network meta-analysis, NMA）時，你可能會想做到這幾件事：
+**NMAstudio 2.0 的現行網址是 [https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/)，標準上傳流程為：進入 `SETUP` 後先按左上角 Reset 清空預設範例 → 上傳另存為 CSV UTF-8 的檔案 → 用下拉選單對應變數與各結果獨立的人數欄位 → 勾選效應修飾因子後點擊 `Run Analysis`。** 做網路統合分析（network meta-analysis, NMA）時，你可能會想做到這幾件事：
 
 - 把「主要療效」和「嚴重不良事件」放在同一張聯合比較表（league table）
 - 檢查遞移性（transitivity），也就是各組比較的研究族群是否夠相似
@@ -15,9 +27,17 @@ draft: false
 
 如果是這樣，**NMAstudio** 會很好用。
 
-開始前先提醒一件事：舊文獻和教學常寫的網址 `https://www.nmastudioapp.com/`，以及說明書網址 `http://www.nmastudioapp.com/doc`，現在都會出現 503 錯誤，連不上。
+> **免費線上 NMA 工具三部曲（第 2 篇）**：第 1 篇先用 [MetaInsight v7.1.1](/blog/metainsight-upload-tutorial/) 跑統計模型；本篇用 **NMAstudio 2.0** 並排比較多結果並做遞移性視覺檢查；第 3 篇用 [CINeMA 3.0.1](/blog/cinema-upload-tutorial/) 完成 GRADE 證據等級評定並匯回上色。
 
-開發團隊在 2026 年發表論文後，目前公開可用的是 **NMAstudio 2.0**，架設在挪威的雲端主機上：[https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/)。本文以 2.0 版的實際介面和實測結果為準，帶你走完整理資料、上傳、核對的流程。
+開始前先提醒一件事：舊文獻和教學常寫的網址 `https://www.nmastudioapp.com/`，以及說明書網址 `http://www.nmastudioapp.com/doc`，現在都會出現 503 錯誤，連不上。開發團隊在 2026 年發表論文後，目前公開可用的是 **NMAstudio 2.0**，架設在挪威的雲端主機上：[https://nmastudio.uiocloud.no/](https://nmastudio.uiocloud.no/)。本文以 2.0 版的實際介面和實測結果為準，帶你走完整理資料、上傳、核對的流程。
+
+## 重點整理
+
+- **改用 2.0 新網址**：舊站 `nmastudioapp.com` 已回傳 503，請直接前往 `nmastudio.uiocloud.no`。
+- **僅接受 CSV 格式**：不支援直接上傳 `.xlsx`，請在 Excel 另存為 CSV UTF-8（逗號分隔）。
+- **多結果不可共用人數欄**：每個變數都要對應不同的欄位（如 `n_resp`、`n_ae`），且連續型與反變異數（`iv`）格式的人數 `n` 實測皆為必填。
+- **`treat_class` 上色只支援 Long 格式**：想依藥物分類幫網絡圖節點上色，請用 Long 格式並保留固定欄名 `treat_class`。
+- **0 事件由系統自動處理**：單組 0 事件自動加 0.5 校正，雙組 0 事件自動排除。
 
 ## NMAstudio 2.0 是什麼？適合誰？
 
@@ -278,7 +298,7 @@ Kim_2023,2023,H,Placebo,IA_HA,Control,Injection,5.7,1.7,60,3.5,1.5,61,63.4
 - `Ranking`
 - `Consistency & Reporting bias`
 
-如果你已經在 [CINeMA 網頁系統](https://cinema.ispm.unibe.ch/) 做完證據確定性評估，可以切到上方的 **CINeMA** 分頁，依各結果名稱分別上傳報告 CSV。League table 就會依證據確定性自動上色。
+如果你已經在 [CINeMA 網頁系統](https://cinema.med.auth.gr/) 做完證據確定性評估（操作步驟見第 3 篇：[CINeMA 3.0.1 上傳教學](/blog/cinema-upload-tutorial/)），可以切到上方的 **CINeMA** 分頁，依各結果名稱分別上傳報告 CSV。League table 就會依證據確定性自動上色。
 
 ![CINeMA 分頁，每個結果各有一個報告上傳區](/images/blog/nmastudio-upload-tutorial/09-cinema-tab.png)
 *要整合多個結果的證據等級，請在這裡依結果名稱，分別上傳對應的 CINeMA 匯出報告。*
@@ -296,7 +316,7 @@ Kim_2023,2023,H,Placebo,IA_HA,Control,Injection,5.7,1.7,60,3.5,1.5,61,63.4
 
 ## 延伸閱讀與工具比較
 
-如果你的研究需要**貝氏 NMA**，或要對共變數做**統合迴歸**，建議搭配上一篇：[MetaInsight 資料上傳教學：從 Excel 到網路統合分析](/blog/metainsight-upload-tutorial/)。
+如果你的研究需要**貝氏 NMA**，或要對共變數做**統合迴歸**，建議搭配第 1 篇：[MetaInsight v7.1.1 資料上傳教學：從 Excel 到網路統合分析](/blog/metainsight-upload-tutorial/)；想完成 **GRADE 證據確定性評估**並將評級匯回 NMAstudio 上色，請接著看第 3 篇：[CINeMA 3.0.1 上傳教學：評估網路統合分析 GRADE 證據可信度](/blog/cinema-upload-tutorial/)。
 
 一句話區分：**MetaInsight 強在貝氏模型與統合迴歸；NMAstudio 2.0 強在多結果並排呈現，以及整合 CINeMA 證據等級。**
 

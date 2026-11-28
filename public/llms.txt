@@ -20,6 +20,10 @@
 
 - [文章列表（中文）](https://drliangchen.com/blog/): clinical notes, evidence-based medicine, tools and essays
 - [Posts (English)](https://drliangchen.com/en/blog/)
+- [MetaInsight v7.1.1 資料上傳教學](https://drliangchen.com/blog/metainsight-upload-tutorial/) / [English](https://drliangchen.com/en/blog/metainsight-upload-tutorial/): step-by-step guide to long/wide CSV formatting, case-sensitive headers, Bayesian/Frequentist setup and troubleshooting
+- [NMAstudio 2.0 資料上傳教學](https://drliangchen.com/blog/nmastudio-upload-tutorial/) / [English](https://drliangchen.com/en/blog/nmastudio-upload-tutorial/): preparing long, wide and inverse-variance CSVs, multi-outcome mapping, transitivity checks and CINeMA import
+- [CINeMA 3.0.1 上傳與 GRADE 評估教學](https://drliangchen.com/blog/cinema-upload-tutorial/) / [English](https://drliangchen.com/en/blog/cinema-upload-tutorial/): preparing rob/indirectness CSVs, contribution matrix, six GRADE-based domains and exporting reports back to NMAstudio
+- [Cochrane 投稿心得：從 Proposal 到 Protocol（2026 新制）](https://drliangchen.com/blog/cochrane-proposal-protocol/) / [English](https://drliangchen.com/en/blog/cochrane-proposal-protocol/): first-hand guide based on CD016383
 
 ## Identity
 
