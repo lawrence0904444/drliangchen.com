@@ -5,8 +5,9 @@
 ## 日常操作
 
 ```bash
-npm run dev      # 本機預覽 http://localhost:4321（存檔即時更新）
-npm run build    # 建置到 dist/
+npm run dev        # 本機預覽 http://localhost:4321（存檔即時更新）
+npm run build      # 建置到 dist/
+npm run check:seo  # 檢查已發佈文章的 SEO／AEO 規範與結構化資料
 ```
 
 ## 寫文章
@@ -43,7 +44,8 @@ faq:                   # 選填：文末常見問題，並輸出 FAQPage 結構�
 - `src/data/cv.ts`：簡歷資料，中英文共用（改一次，`/cv/` 與 `/en/cv/` 一起更新；空的區塊不會顯示）
 - `src/pages/about.astro`、`src/pages/en/about.astro`：關於我（中、英各一份）
 - `src/i18n.ts`：頁首、頁尾、分類名稱等介面文字
-- `src/seo.ts`：結構化資料（Person、ORCID／LinkedIn 等個人檔案連結）；`public/llms.txt`：給 AI 的網站簡介
+- `src/seo.ts`：結構化資料（Person、ORCID／LinkedIn 等個人檔案連結）；`src/pages/llms.txt.ts`：自動產生給 AI 的網站與文章目錄（`dist/llms.txt`）
+- `AGENTS.md`（與 `CLAUDE.md`）：AI 寫作的預設雙語 SEO／AEO 規範與發文檢查標準
 
 ## 第一次部署（只要做一次）
 
